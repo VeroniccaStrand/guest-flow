@@ -3,17 +3,15 @@ import asyncHandler from 'express-async-handler';
 import { Request, Response, NextFunction } from 'express';
 
 
-
-
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload ;
+      user?: JwtPayload; 
     }
   }
 }
 
-const protectVisit = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+const protect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   let token: string | undefined;
 
   // Extract token from request cookies if cookies are defined
@@ -27,23 +25,25 @@ const protectVisit = asyncHandler(async (req: Request, res: Response, next: Next
       // Verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
 
-      // Check if userId is present in the decoded token
-      if (!decoded.id) {
-        res.status(401).send('Not authorized, token is missing userId');
+      // Check if user role is ADMIN
+      if (decoded.role !== 'ADMIN') {
+        res.status(403).json({ error: 'Not authorized, user is not an admin' }); // Send JSON response for 403 error
         return;
       }
 
-      // Attach user to request
-    req.user = decoded
+      // If the user is an admin, set the decoded user information in the request object
+      req.user = decoded;
 
       next();
     } catch (error) {
       console.error(error);
-      res.status(401).send('Not authorized, token verification failed');
+      res.status(401);
+      throw new Error('Not authorized, token verification failed');
     }
   } else {
-    res.status(401).send('Not authorized, no token found');
+    res.status(401);
+    throw new Error('Not authorized, no token found');
   }
 });
 
-export { protectVisit };
+export { protect };

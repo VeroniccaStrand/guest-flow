@@ -12,10 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.protectVisit = void 0;
+exports.protect = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
-const protectVisit = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const protect = (0, express_async_handler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let token;
     // Extract token from request cookies if cookies are defined
     if (req.cookies) {
@@ -26,22 +26,24 @@ const protectVisit = (0, express_async_handler_1.default)((req, res, next) => __
         try {
             // Verify the token
             const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-            // Check if userId is present in the decoded token
-            if (!decoded.id) {
-                res.status(401).send('Not authorized, token is missing userId');
+            // Check if user role is ADMIN
+            if (decoded.role !== 'ADMIN') {
+                res.status(403).json({ error: 'Not authorized, user is not an admin' }); // Send JSON response for 403 error
                 return;
             }
-            // Attach user to request
+            // If the user is an admin, set the decoded user information in the request object
             req.user = decoded;
             next();
         }
         catch (error) {
             console.error(error);
-            res.status(401).send('Not authorized, token verification failed');
+            res.status(401);
+            throw new Error('Not authorized, token verification failed');
         }
     }
     else {
-        res.status(401).send('Not authorized, no token found');
+        res.status(401);
+        throw new Error('Not authorized, no token found');
     }
 }));
-exports.protectVisit = protectVisit;
+exports.protect = protect;
