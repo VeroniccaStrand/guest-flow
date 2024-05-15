@@ -64,6 +64,7 @@ exports.registerUser = (0, express_async_handler_1.default)((req, res) => __awai
 // @route   POST /api/users/login
 // @access  Public
 exports.loginUser = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('backend login');
     const { username, password } = req.body;
     // Validate the username
     if (!username || typeof username !== 'string') {
@@ -79,10 +80,11 @@ exports.loginUser = (0, express_async_handler_1.default)((req, res) => __awaiter
     // Check if user exists and password matches
     if (user && (yield bcrypt_1.default.compare(password, user.password))) {
         // If valid, generate and send token along with user details
+        const token = generateToken(res, user.id, user.role);
         res.json({
             id: user.id,
             name: user.fullname,
-            token: generateToken(res, user.id, user.role),
+            token: token,
         });
     }
     else {
@@ -130,7 +132,7 @@ exports.getAllUsers = (0, express_async_handler_1.default)((req, res) => __await
 exports.logoutUser = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Clear the JWT cookie by setting it to an empty string and setting the expiration date to the past
     res.cookie('jwt', '', {
-        httpOnly: true,
+        httpOnly: false,
         expires: new Date(0),
     });
     // Send a success response indicating the user has been logged out
@@ -183,9 +185,8 @@ const generateToken = (res, id, role) => {
     });
     // Set the token as a cookie in the response
     res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: 'strict',
+        httpOnly: false,
+        // Use secure cookies in production
     });
-    console.log(token);
+    return token;
 };

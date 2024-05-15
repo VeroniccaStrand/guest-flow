@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
-import { Response, Request } from 'express';
+import { Response, Request, response } from 'express';
 
 const prisma = new PrismaClient();
 
@@ -57,6 +57,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
 // @route   POST /api/users/login
 // @access  Public
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
+  console.log('backend login')
   const { username, password } = req.body;
 
   // Validate the username
@@ -75,10 +76,13 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   // Check if user exists and password matches
   if (user && (await bcrypt.compare(password, user.password))) {
     // If valid, generate and send token along with user details
+    const token = generateToken(res, user.id, user.role)
+    
     res.json({
       id: user.id,
       name: user.fullname,
-      token: generateToken(res, user.id, user.role),
+      token:token,
+      
     });
   } else {
     // If invalid, send a 400 error response
@@ -133,7 +137,7 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
 export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
   // Clear the JWT cookie by setting it to an empty string and setting the expiration date to the past
   res.cookie('jwt', '', {
-    httpOnly: true,
+    httpOnly: false,
     expires: new Date(0),
   });
 
@@ -196,10 +200,10 @@ const generateToken = (res: Response, id: string, role: string) => {
 
   // Set the token as a cookie in the response
   res.cookie('jwt', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    sameSite: 'strict',
+    httpOnly: false,
+     // Use secure cookies in production
+    
   });
 
-  console.log(token);
+return token
 };
