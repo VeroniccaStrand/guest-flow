@@ -28,7 +28,7 @@ const protectVisit = (0, express_async_handler_1.default)((req, res, next) => __
             const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
             // Check if userId is present in the decoded token
             if (!decoded.id) {
-                res.status(401).send('Not authorized, token is missing userId');
+                res.status(401).json({ message: 'Not authorized, token is missing userId' });
                 return;
             }
             // Attach user to request
@@ -37,11 +37,11 @@ const protectVisit = (0, express_async_handler_1.default)((req, res, next) => __
         }
         catch (error) {
             console.error(error);
-            res.status(401).send('Not authorized, token verification failed');
+            res.status(401).json({ message: 'Not authorized, token verification failed' });
         }
     }
     else {
-        res.status(401).send('Not authorized, no token found');
+        res.status(401).json({ message: 'Not authorized, no token found' });
     }
 }));
 exports.protectVisit = protectVisit;

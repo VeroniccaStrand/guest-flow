@@ -2,13 +2,10 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import { Request, Response, NextFunction } from 'express';
 
-
-
-
 declare global {
   namespace Express {
     interface Request {
-      user?: JwtPayload ;
+      user?: JwtPayload;
     }
   }
 }
@@ -29,20 +26,20 @@ const protectVisit = asyncHandler(async (req: Request, res: Response, next: Next
 
       // Check if userId is present in the decoded token
       if (!decoded.id) {
-        res.status(401).send('Not authorized, token is missing userId');
+        res.status(401).json({ message: 'Not authorized, token is missing userId' });
         return;
       }
 
       // Attach user to request
-    req.user = decoded
+      req.user = decoded;
 
       next();
     } catch (error) {
       console.error(error);
-      res.status(401).send('Not authorized, token verification failed');
+      res.status(401).json({ message: 'Not authorized, token verification failed' });
     }
   } else {
-    res.status(401).send('Not authorized, no token found');
+    res.status(401).json({ message: 'Not authorized, no token found' });
   }
 });
 

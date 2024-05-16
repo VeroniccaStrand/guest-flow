@@ -25,6 +25,15 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use('/api/users', userRoutes_1.default);
 app.use('/api/visits', visitRoutes_1.default);
 app.use(errorMiddleware_1.default);
+exports.io.on('connection', (socket) => {
+    const clientAddress = socket.handshake.address;
+    const connectTime = new Date().toISOString();
+    console.log(`New client connected from ${clientAddress} at ${connectTime}`);
+    socket.on('disconnect', () => {
+        const disconnectTime = new Date().toISOString();
+        console.log(`Client disconnected from ${clientAddress} at ${disconnectTime}`);
+    });
+});
 server.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { UserContext } from '../contexts/userContext';
+import { UserContext } from '../contexts/UserContext';
 import { useContext, useState } from 'react';
 import LogOut from './LogOut';
 import Modal from './Modal';
