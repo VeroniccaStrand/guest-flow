@@ -12,8 +12,8 @@ const visitRoutes_1 = __importDefault(require("./routes/visitRoutes"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const errorMiddleware_1 = __importDefault(require("./middleware/errorMiddleware"));
 const app = (0, express_1.default)();
-const server = http_1.default.createServer(app);
 app.use((0, cookie_parser_1.default)());
+const server = http_1.default.createServer(app);
 exports.io = new socket_io_1.Server(server, {
     cors: {
         origin: '*' // Allows connections from any domain

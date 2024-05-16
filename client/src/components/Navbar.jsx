@@ -23,7 +23,10 @@ const Navbar = () => {
   );
 
   return (
-    <nav className='bg-custom-bg p-4'>
+    <nav className='bg-custom-bg p-4 navbar '>
+      <div className='h-24 w-24 mr-10'>
+        <img src="./src/assets/nolato-logo-redblack-jpg.jpg" alt="" />
+      </div>
       <div className='container mx-auto flex justify-between items-center'>
         {loggedIn ? (
           <>

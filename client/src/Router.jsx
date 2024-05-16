@@ -14,6 +14,7 @@ const Router = () => {
           <Route path='/' element={<FrontPage />} />
           <Route path='/dashboard' element={<Dashboard />} />
 
+
         </Routes>
       </UserProvider>
     </BrowserRouter>

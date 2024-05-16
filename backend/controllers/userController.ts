@@ -56,6 +56,7 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
 // @desc    Login User / generate token
 // @route   POST /api/users/login
 // @access  Public
+
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   console.log('backend login')
   const { username, password } = req.body;

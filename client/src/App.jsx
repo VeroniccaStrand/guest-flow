@@ -2,7 +2,7 @@ import Router from './Router'
 
 const App = () => {
   return (
-    <div className='min-h-screen bg-zinc-900'>
+    <div className='min-h-screen bg-custom-bg'>
       <Router />
     </div>
   )

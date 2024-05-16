@@ -14,9 +14,10 @@ const config = {
       } ,
        colors: {
         'brand-red': '#bf2519',
-        'custom-bg': '#1c1c1e',
-        'primary-text': '#e5e5e5',
-        'secondary-text': '#a8a8a8'
+        'custom-bg': '#FFFFFF',
+        'primary-text': '#000000',
+        'secondary-text': '#999999',
+        'secondary-bg':'#B3B3B3'
         // You can add more custom colors here
       }
     }, 

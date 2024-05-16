@@ -6,8 +6,11 @@ import visitRoutes from './routes/visitRoutes'
 import cookieParser from 'cookie-parser'
 import errorHandler from './middleware/errorMiddleware';
 const app = express();
-const server = http.createServer(app);
 app.use(cookieParser());
+const server = http.createServer(app);
+
+
+
 export const io = new Server(server, {
   cors: {
     origin: '*'  // Allows connections from any domain
