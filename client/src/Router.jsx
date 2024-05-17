@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import FrontPage from './pages/FrontPage';
 import EditPage from './pages/EditPage';
 import { VisitProvider } from './contexts/VisitContext';
+import WelcomePage from './pages/WelcomePage';
 
 const Router = () => {
   return (
@@ -18,6 +19,7 @@ const Router = () => {
             <Route path='/' element={<FrontPage />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path="/visit/:id" element={<EditPage />} />
+            <Route path="/welcome" element={<WelcomePage />} />
 
           </Routes>
         </VisitProvider>

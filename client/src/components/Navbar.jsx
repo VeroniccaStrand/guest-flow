@@ -41,7 +41,7 @@ const Navbar = () => {
                 <Link to='/meditor' className={getLinkClass('/meditor')}>Display Meditor</Link>
               </li>
               <li>
-                <Link to='/entre' className={getLinkClass('/entre')}>Display Entré</Link>
+                <Link to='/welcome' className={getLinkClass('/welcome')}>Display Entré</Link>
               </li>
             </ul>
             <div className='ml-auto'>
