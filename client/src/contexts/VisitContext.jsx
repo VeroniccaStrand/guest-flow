@@ -15,7 +15,7 @@ export const VisitProvider = ({ children }) => {
       try {
         const response = await api.get('/visits')
         const data = await response
-        console.log(data.data)
+
         setVisit(data.data)
         console.log()
       } catch (error) {

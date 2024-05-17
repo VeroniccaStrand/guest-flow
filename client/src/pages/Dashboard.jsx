@@ -5,8 +5,7 @@ import { useContext } from 'react';
 
 const Dashboard = () => {
   const { visits, isLoading } = useContext(VisitContext);
-  console.log(isLoading)
-  console.log(visits)
+
   return (
     <div className="min-h-screen bg-gray-100 text-secondary-text p-4">
       <div className="container mx-auto">

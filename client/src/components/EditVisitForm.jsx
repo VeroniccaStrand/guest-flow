@@ -3,15 +3,14 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../services/api';
 import VisitContext from '../contexts/VisitContext';
 
-
 const EditVisitForm = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
   const { visits } = useContext(VisitContext);
   const [formData, setFormData] = useState({
     company: '',
     company_info: '',
-    company_logo: '',
+    company_logo: null,
     visitor_count: '',
     visiting_departments: [],
     scheduled_arrival: '',
@@ -37,7 +36,7 @@ const EditVisitForm = () => {
   }, [id, visits]);
 
   const handleChange = (e) => {
-    const { id, value, type, checked, name } = e.target;
+    const { id, value, type, checked, name, files } = e.target;
     if (type === 'checkbox' && name === 'visiting_departments') {
       setFormData((prevData) => {
         if (checked) {
@@ -54,41 +53,40 @@ const EditVisitForm = () => {
           };
         }
       });
+    } else if (type === 'file') {
+      setFormData((prevData) => ({
+        ...prevData,
+        company_logo: files[0],  // Set the file directly in formData
+      }));
     } else {
-      if (id === 'scheduled_arrival') {
-        const formattedDateTime = new Date(value).toISOString().slice(0, 16);
-        setFormData((prevData) => ({
-          ...prevData,
-          [id || name]: formattedDateTime,
-        }));
-      } else {
-        setFormData((prevData) => ({
-          ...prevData,
-          [id || name]: type === 'checkbox' ? checked : value,
-        }));
-      }
+      setFormData((prevData) => ({
+        ...prevData,
+        [id || name]: value,
+      }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Convert visiting_departments array to a comma-separated string
-    const updatedFormData = {
-      ...formData,
-      visiting_departments: formData.visiting_departments.join(', '),
-    };
-    const scheduledArrivalDate = new Date(updatedFormData.scheduled_arrival);
-    if (!isNaN(scheduledArrivalDate.getTime())) {
-      updatedFormData.scheduled_arrival = scheduledArrivalDate.toISOString();
-    } else {
-      console.error('Invalid scheduled_arrival format');
-      return;
+    const today = new Date().toISOString().split('T')[0];
+    const isActive = formData.scheduled_arrival.split('T')[0] === today;
+
+    const submissionData = new FormData();
+    for (const key in formData) {
+      submissionData.append(key, formData[key]);
     }
+    submissionData.append('isActive', isActive);
+
+    console.log('Submission data:', submissionData);
 
     try {
-      const response = await api.put(`/visits/${id}`, updatedFormData);
+      const response = await api.put(`/visits/${id}`, submissionData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       if (response.status === 201) {
-        navigate('/dashboard')
+        navigate('/dashboard');
       }
     } catch (error) {
       console.error('Error updating visit', error);
@@ -97,7 +95,7 @@ const EditVisitForm = () => {
 
   return (
     <div className="p-4 bg-custom-bg rounded shadow-md">
-      <form className="w-full max-w-lg" onSubmit={handleSubmit}>
+      <form className="w-full max-w-lg" onSubmit={handleSubmit} encType="multipart/form-data">
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full px-3 mb-6">
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company">
@@ -129,14 +127,12 @@ const EditVisitForm = () => {
           </div>
           <div className="w-full px-3 mb-6">
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_logo">
-              Company Logo URL
+              Company Logo
             </label>
             <input
               className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
               id="company_logo"
-              type="text"
-              placeholder="Company Logo URL"
-              value={formData.company_logo}
+              type="file"
               onChange={handleChange}
             />
           </div>

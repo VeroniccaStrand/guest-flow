@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import Visit from './Visit';
 
 const VisitList = ({ visits }) => {
-  console.log(visits)
+
   if (!visits || visits.length === 0) {
     return <div>No visits available.</div>;
 

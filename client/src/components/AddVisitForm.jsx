@@ -1,21 +1,23 @@
 import { useState } from 'react';
 import { api } from '../services/api';
 import Notification from './Notification';
+
 const AddVisitForm = () => {
   const [formData, setFormData] = useState({
     company: '',
     company_info: '',
-    company_logo: '',
+    company_logo: null,
     visitor_count: '',
     visiting_departments: [],
     scheduled_arrival: '',
     welcome_message: '',
     host: ''
   });
+
   const [showNotification, setShowNotification] = useState(false);
-  // Handle form input changes
+
   const handleChange = (e) => {
-    const { id, value, type, checked, name } = e.target;
+    const { id, value, type, checked, name, files } = e.target;
     if (type === 'checkbox' && name === 'visiting_departments') {
       setFormData((prevData) => {
         if (checked) {
@@ -32,6 +34,11 @@ const AddVisitForm = () => {
           };
         }
       });
+    } else if (type === 'file') {
+      setFormData((prevData) => ({
+        ...prevData,
+        company_logo: files[0],  // files[0] contains the uploaded file
+      }));
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -40,41 +47,44 @@ const AddVisitForm = () => {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     const today = new Date().toISOString().split('T')[0];
     const isActive = formData.scheduled_arrival.split('T')[0] === today;
 
-    // Ensure visitor_count is a string
-    const visitor_count = formData.visitor_count;
+    const submissionData = new FormData();
+    for (const key in formData) {
+      if (key === 'company_logo' && formData[key]) {
+        submissionData.append(key, formData[key], formData[key].name);  // Append the file with its name
+      } else {
+        submissionData.append(key, formData[key]);
+      }
+    }
+    submissionData.append('isActive', isActive);
 
-    const submissionData = {
-      ...formData,
-      isActive,
-      visiting_departments: formData.visiting_departments.join(', '), // Convert array to string
-      visitor_count,
-    };
+    console.log('Submission data:', submissionData);
 
     try {
-      const response = await api.post('/visits', submissionData);
+      const response = await api.post('/visits', submissionData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
       if (response.status === 201) {
         setShowNotification(true);
         setFormData({
           company: '',
           company_info: '',
-          company_logo: '',
+          company_logo: null,
           visitor_count: '',
           visiting_departments: [],
           scheduled_arrival: '',
           welcome_message: '',
           host: ''
-
-
-        })
+        });
 
         setTimeout(() => setShowNotification(false), 3000);
-
       }
     } catch (error) {
       console.error('Error adding visit:', error);
@@ -85,8 +95,8 @@ const AddVisitForm = () => {
   };
 
   return (
-    <div className="p-4 ">
-      <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit}>
+    <div className="p-4">
+      <form className="grid grid-cols-1 md:grid-cols-2 gap-4" onSubmit={handleSubmit} encType="multipart/form-data">
         <div>
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company">
             Company
@@ -117,14 +127,12 @@ const AddVisitForm = () => {
         </div>
         <div>
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_logo">
-            Company Logo URL
+            Company Logo
           </label>
           <input
             className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
             id="company_logo"
-            type="text"
-            placeholder="Company Logo URL"
-            value={formData.company_logo}
+            type="file"
             onChange={handleChange}
           />
         </div>

@@ -10,7 +10,7 @@ const WelcomePage = () => {
     const scheduledArrival = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
     return scheduledArrival === today;
   });
-
+  console.log(todaysVisits)
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen text-4xl">Loading visits...</div>;
   }
@@ -26,7 +26,7 @@ const WelcomePage = () => {
           <span className="absolute bottom-[75px] left-1/2 transform -translate-x-1/2 h-0.5 w-2/4 bg-gradient-to-r from-transparent via-brand-red to-transparent"></span>
         </h1>
         <p className="text-6xl italic text-nyans-text font-light mt-4">
-          We're glad you are here
+          We&apos;re glad you are here
         </p>
       </div>
       <main className="flex-grow flex flex-col items-center justify-center mt-8">
@@ -39,6 +39,12 @@ const WelcomePage = () => {
                 </div>
                 <div className="text-4xl text-secondary-text mt-2">
                   {visit.company_info}
+                </div>
+
+                <div className="text-4xl text-secondary-text mt-2">
+                  {visit.company_logo && (
+                    <img src={`data:image/png;base64,${visit.company_logo}`} alt={`${visit.company} logo`} />
+                  )}
                 </div>
               </div>
             ))}
