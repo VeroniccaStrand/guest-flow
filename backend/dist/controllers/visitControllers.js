@@ -24,12 +24,6 @@ const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage()
 const closePrismaClient = () => __awaiter(void 0, void 0, void 0, function* () {
     yield prisma.$disconnect();
 });
-// Helper function to convert base64 to buffer
-// Helper function to convert file to base64 string
-const convertFileToBase64 = (filePath) => {
-    const fileBuffer = fs_1.default.readFileSync(filePath);
-    return fileBuffer.toString('base64');
-};
 // Helper function to convert base64 to Buffer
 const base64ToBuffer = (base64) => {
     const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
@@ -43,8 +37,6 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
     console.log('Request body:', req.body);
     console.log('Uploaded file:', req.file);
     const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, welcome_message, host } = req.body;
-    const company_logo = req.file ? req.file.path : null;
-    console.log('Company logo path:', company_logo);
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     if (!userId) {
         console.error('User ID is missing');
@@ -58,12 +50,14 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
         return;
     }
     let companyLogoBuffer = null;
-    if (company_logo) {
+    if (req.file) {
         try {
-            companyLogoBuffer = base64ToBuffer(company_logo);
+            const filePath = req.file.path;
+            companyLogoBuffer = fs_1.default.readFileSync(filePath);
+            fs_1.default.unlinkSync(filePath); // Remove the temporary file
         }
         catch (error) {
-            console.error('Error converting base64 to buffer:', error);
+            console.error('Error processing uploaded file:', error);
             res.status(400).json({ message: 'Invalid image data' });
             return;
         }

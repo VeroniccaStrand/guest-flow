@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 
 // Optional file filter to check file type
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-  const filetypes = /jpeg|jpg|png|pdf/;
+  const filetypes = /jpeg|jpg|png|pdf|svg/;
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = filetypes.test(file.mimetype);
   console.log(`File extension valid: ${extname}, MIME type valid: ${mimetype}`);

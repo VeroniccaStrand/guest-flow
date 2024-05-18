@@ -13,15 +13,6 @@ const closePrismaClient = async () => {
   await prisma.$disconnect();
 };
 
-
-
-// Helper function to convert base64 to buffer
-// Helper function to convert file to base64 string
-const convertFileToBase64 = (filePath: string) => {
-  const fileBuffer = fs.readFileSync(filePath);
-  return fileBuffer.toString('base64');
-};
-
 // Helper function to convert base64 to Buffer
 const base64ToBuffer = (base64: string): Buffer => {
   const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
@@ -36,10 +27,8 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
   console.log('Uploaded file:', req.file);
 
   const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, welcome_message, host } = req.body;
-  const company_logo = req.file ? req.file.path : null;
-  console.log('Company logo path:', company_logo);
-
   const userId = req.user?.id;
+
   if (!userId) {
     console.error('User ID is missing');
     res.status(400).json({ message: 'User ID is required' });
@@ -53,12 +42,14 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
     return;
   }
 
-  let companyLogoBuffer: Buffer | null = null;
-  if (company_logo) {
+    let companyLogoBuffer: Buffer | null = null;
+  if (req.file) {
     try {
-      companyLogoBuffer = base64ToBuffer(company_logo);
+      const filePath = req.file.path;
+      companyLogoBuffer = fs.readFileSync(filePath);
+      fs.unlinkSync(filePath);  // Remove the temporary file
     } catch (error) {
-      console.error('Error converting base64 to buffer:', error);
+      console.error('Error processing uploaded file:', error);
       res.status(400).json({ message: 'Invalid image data' });
       return;
     }
@@ -168,7 +159,6 @@ export const deleteVisit = asyncHandler(async (req: Request, res: Response) => {
   res.json({ message: `deleted visit ${deleteVisit.id}` });
   await closePrismaClient();
 });
-
 
 // @desc    Get All visits
 // @route   GET /api/visits
