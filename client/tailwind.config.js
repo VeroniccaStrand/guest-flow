@@ -21,6 +21,10 @@ const config = {
       textShadow: {
         'red': '2px 2px 4px rgba(191, 37, 25, 0.5)', // Adding red text shadow
       },
+          gridTemplateColumns: {
+        'auto-fill-100': 'repeat(auto-fill, minmax(400px, 1fr))',
+        'auto-fit-100': 'repeat(auto-fit, minmax(400px, 1fr))',
+      },
     },
   },
  

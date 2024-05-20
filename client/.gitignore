@@ -1,4 +1,5 @@
 # Logs
+.uploads
 assets
 logs
 *.log

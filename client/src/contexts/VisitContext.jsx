@@ -1,74 +1,74 @@
-import { createContext, useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { api } from '../services/api'
-import io from 'socket.io-client'
+import { createContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { api } from '../services/api';
+import io from 'socket.io-client';
 
 
-export const VisitContext = createContext()
+export const VisitContext = createContext();
 
 export const VisitProvider = ({ children }) => {
-  const [visits, setVisit] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [visits, setVisit] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     const fetchVisits = async () => {
       try {
-        const response = await api.get('/visits')
-        const data = await response
-
-        setVisit(data.data)
-        console.log()
+        const response = await api.get('/visits');
+        const data = await response.data;
+        setVisit(data);
+        console.log('Fetched visits:', data); // Debugging line
       } catch (error) {
-        console.error('Error fetching Visits', error)
+        console.error('Error fetching Visits', error);
       }
-      setIsLoading(false)
-    }
-    fetchVisits()
-
-  }, [])
+      setIsLoading(false);
+    };
+    fetchVisits();
+  }, []);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000') // Sätt rätt URL för din backend
+    const socket = io('http://localhost:3000'); // Sätt rätt URL för din backend
 
     socket.on('connect', () => {
-      console.log('Socket connected')
-    })
+      console.log('Socket connected');
+    });
 
     socket.on('newVisit', (newVisit) => {
-      setVisit((prevVisits) => [...prevVisits, newVisit])
-
-    })
+      console.log('New visit received:', newVisit); // Debugging line
+      setVisit((prevVisits) => [...prevVisits, newVisit]);
+    });
 
     socket.on('updateVisit', (updatedVisit) => {
-      console.log('socket update')
+      console.log('Updated visit received:', updatedVisit); // Debugging line
       setVisit((prevVisits) =>
         prevVisits.map((visit) =>
           visit.id === updatedVisit.id ? updatedVisit : visit
         )
-      )
-    })
+      );
+    });
+    socket.on('deleteVisit', ({ id }) => {
+      setVisit((prevVisits) => prevVisits.filter((visit) => visit.id !== id));
+
+    });
 
     socket.on('disconnect', () => {
-      console.log('Socket disconnected')
-    })
+      console.log('Socket disconnected');
+    });
 
     return () => {
-      socket.disconnect()
-    }
-  }, [])
+      socket.disconnect();
+    };
+  }, []);
 
   return (
-    <VisitContext.Provider
-      value={{ visits, isLoading }} >
+    <VisitContext.Provider value={{ visits, isLoading }}>
       {children}
-    </VisitContext.Provider >
-  )
-}
-
-
+    </VisitContext.Provider>
+  );
+};
 
 VisitProvider.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default VisitContext
+export default VisitContext;

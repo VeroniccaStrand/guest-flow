@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../services/api';
 import VisitContext from '../contexts/VisitContext';
-
+import Notification from './Notification';
 const EditVisitForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -17,7 +17,7 @@ const EditVisitForm = () => {
     welcome_message: '',
     host: ''
   });
-
+  const [showNotification, setShowNotification] = useState(false);
   useEffect(() => {
     const visit = visits.find((visit) => visit.id === id);
     if (visit) {
@@ -92,12 +92,26 @@ const EditVisitForm = () => {
       console.error('Error updating visit', error);
     }
   };
+  const handleDelete = async () => {
+    try {
+      const response = await api.delete(`/visits/${id}`);
+      if (response.status === 200) {
+        setShowNotification(true);
+        setTimeout(() => setShowNotification(false), 2000);
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error('Error deleting visit', error);
+    }
+  };
 
   return (
     <div className="p-4 bg-custom-bg rounded shadow-md">
-      <form className="w-full max-w-lg" onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full px-3 mb-6">
+      <form className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" onSubmit={handleSubmit} encType="multipart/form-data">
+        <div className="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company">
               Company
             </label>
@@ -111,7 +125,7 @@ const EditVisitForm = () => {
               required
             />
           </div>
-          <div className="w-full px-3 mb-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_info">
               Company Info
             </label>
@@ -125,7 +139,7 @@ const EditVisitForm = () => {
               required
             />
           </div>
-          <div className="w-full px-3 mb-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_logo">
               Company Logo
             </label>
@@ -136,7 +150,7 @@ const EditVisitForm = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="w-full px-3 mb-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="visitor_count">
               Visitor Count
             </label>
@@ -150,7 +164,7 @@ const EditVisitForm = () => {
               required
             />
           </div>
-          <div className="w-full px-3 mb-6">
+          <div className="col-span-2">
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
               Visiting Departments
             </label>
@@ -170,7 +184,7 @@ const EditVisitForm = () => {
               ))}
             </div>
           </div>
-          <div className="w-full px-3 mb-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="scheduled_arrival">
               Scheduled Arrival
             </label>
@@ -183,7 +197,7 @@ const EditVisitForm = () => {
               required
             />
           </div>
-          <div className="w-full px-3 mb-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="welcome_message">
               Welcome Message
             </label>
@@ -197,7 +211,7 @@ const EditVisitForm = () => {
               required
             />
           </div>
-          <div className="w-full px-3 mb-6">
+          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="host">
               Host
             </label>
@@ -211,16 +225,27 @@ const EditVisitForm = () => {
               required
             />
           </div>
+          <div className="col-span-2 flex justify-end">
+            <button
+              className="shadow bg-brand-red hover:bg-red-700 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
+              type="submit"
+            >
+              Update Visit
+            </button>
+          </div>
         </div>
-        <div className="flex justify-end">
+        <div className="col-span-1 md:col-span-1 flex items-start justify-end">
           <button
-            className="shadow bg-brand-red hover:bg-red-700 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-            type="submit"
+            className=" focus:shadow-outline focus:outline-none  underline py-2 px-4 rounded"
+            onClick={handleDelete}
           >
-            Update Visit
+            Delete Visit
           </button>
         </div>
       </form>
+      {showNotification && (
+        <Notification message="Visit deleted" onClose={() => setShowNotification(false)} />
+      )}
     </div>
   );
 };
