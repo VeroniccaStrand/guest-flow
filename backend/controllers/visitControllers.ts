@@ -26,7 +26,7 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
   console.log('Request body:', req.body);
   console.log('Uploaded file:', req.file);
 
-  const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, welcome_message, host } = req.body;
+  const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host } = req.body;
   const userId = req.user?.id;
 
   if (!userId) {
@@ -42,7 +42,7 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
     return;
   }
 
-    let companyLogoBuffer: Buffer | null = null;
+  let companyLogoBuffer: Buffer | null = null;
   if (req.file) {
     try {
       const filePath = req.file.path;
@@ -52,6 +52,15 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
       console.error('Error processing uploaded file:', error);
       res.status(400).json({ message: 'Invalid image data' });
       return;
+    }
+  }
+
+  // Construct visitors array from the request body
+  const visitors = [];
+  for (let i = 0; i < 4; i++) {
+    const visitorName = req.body[`visitors[${i}].name`];
+    if (visitorName) {
+      visitors.push({ name: visitorName });
     }
   }
 
@@ -65,16 +74,32 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
         visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
         scheduled_arrival: scheduledArrivalDate,
         isActive: scheduledArrivalDate.toISOString().split('T')[0] === new Date().toISOString().split('T')[0],
-        welcome_message,
         host,
         createdById: userId,
       },
     });
-    console.log('New visit created:', newVisit);
 
-    io.emit('newVisit', newVisit);
+    // Save visitors
+    for (const visitor of visitors) {
+      await prisma.visitor.create({
+        data: {
+          name: visitor.name,
+          visitId: newVisit.id,
+        },
+      });
+    }
 
-    res.status(201).json(newVisit);
+    // Fetch the new visit with its visitors to include in the socket emission
+    const createdVisit = await prisma.visit.findUnique({
+      where: { id: newVisit.id },
+      include: { visitors: true },
+    });
+
+    console.log('New visit created:', createdVisit);
+
+    io.emit('newVisit', createdVisit);
+
+    res.status(201).json(createdVisit);
   } catch (error) {
     console.error('Error creating visit:', error);
     res.status(500).json({ message: 'An error occurred while creating the visit.', error });
@@ -91,7 +116,7 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
   console.log('Request body:', req.body);
   console.log('Uploaded file:', req.file);
 
-  const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, welcome_message, host } = req.body;
+  const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host, existingVisitors, newVisitors, deletedVisitors } = req.body;
   let company_logo = req.file ? req.file.path : null;
 
   if (req.file) {
@@ -119,7 +144,6 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
       visitor_count,
       visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
       scheduled_arrival: new Date(scheduled_arrival),
-      welcome_message,
       host,
     };
 
@@ -131,11 +155,54 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
       where: { id: visitId },
       data: updatedData,
     });
-    console.log('Visit updated:', updatedVisit);
 
-    io.emit('updateVisit', updatedVisit);
+    // Handle visitor deletions
+    if (deletedVisitors) {
+      const deletedVisitorIds = JSON.parse(deletedVisitors);
+      await prisma.visitor.deleteMany({
+        where: {
+          id: {
+            in: deletedVisitorIds,
+          },
+        },
+      });
+    }
 
-    res.status(201).json(updatedVisit);
+    // Update existing visitors
+    if (existingVisitors) {
+      const existingVisitorData = JSON.parse(existingVisitors);
+      for (const visitor of existingVisitorData) {
+        await prisma.visitor.update({
+          where: { id: visitor.id },
+          data: { name: visitor.name },
+        });
+      }
+    }
+
+    // Add new visitors
+    if (newVisitors) {
+      const newVisitorData = JSON.parse(newVisitors);
+      for (const visitor of newVisitorData) {
+        await prisma.visitor.create({
+          data: {
+            name: visitor.name,
+            visitId: updatedVisit.id,
+          },
+        });
+      }
+    }
+
+    // Fetch the updated visit with its visitors to include in the socket emission
+    const updatedVisitWithVisitors = await prisma.visit.findUnique({
+      where: { id: visitId },
+      include: { visitors: true },
+    });
+
+    console.log('Visit updated:', updatedVisitWithVisitors);
+
+    io.emit('updateVisit', updatedVisitWithVisitors);
+
+    res.status(200).json(updatedVisitWithVisitors);
   } catch (error) {
     console.error('Error updating visit', error);
     res.status(500).json({ message: 'Internal server error' });
@@ -150,14 +217,26 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
 export const deleteVisit = asyncHandler(async (req: Request, res: Response) => {
   const visitId = req.params.id;
 
-  const deleteVisit = await prisma.visit.delete({
-    where: { id: visitId }
-  });
+  try {
+    // Delete associated visitors
+    await prisma.visitor.deleteMany({
+      where: { visitId },
+    });
 
-  io.emit('deleteVisit', { id: visitId });
+    // Delete the visit
+    const deleteVisit = await prisma.visit.delete({
+      where: { id: visitId },
+    });
 
-  res.json({ message: `deleted visit ${deleteVisit.id}` });
-  await closePrismaClient();
+    io.emit('deleteVisit', { id: visitId });
+
+    res.json({ message: `Deleted visit ${deleteVisit.id} and its associated visitors` });
+  } catch (error) {
+    console.error('Error deleting visit and its visitors:', error);
+    res.status(500).json({ message: 'An error occurred while deleting the visit and its visitors.', error });
+  } finally {
+    await closePrismaClient();
+  }
 });
 
 // @desc    Get All visits
@@ -169,7 +248,11 @@ const bufferToBase64 = (buffer: Buffer): string => {
 };
 
 export const getAllVisits = asyncHandler(async (req: Request, res: Response) => {
-  const visits = await prisma.visit.findMany();
+  const visits = await prisma.visit.findMany({
+    include: {
+      visitors: true, // Include related visitors
+    },
+  });
 
   // Convert buffer to base64 string for all visits
   const visitsWithBase64Logo = visits.map(visit => ({

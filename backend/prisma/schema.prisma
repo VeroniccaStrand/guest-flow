@@ -31,8 +31,17 @@ model Visit {
   visiting_departments String?
   scheduled_arrival    DateTime
   isActive             Boolean?
-  welcome_message      String?
-  host                 String?
-  createdBy            User     @relation(fields: [createdById], references: [id])
-  createdById          String
+
+  host        String?
+  createdBy   User    @relation(fields: [createdById], references: [id])
+  createdById String
+
+  visitors Visitor[] @relation("VisitToVisitors")
+}
+
+model Visitor {
+  id      String @id @default(uuid())
+  name    String
+  visitId String
+  visit   Visit  @relation(fields: [visitId], references: [id], onDelete: Cascade, name: "VisitToVisitors")
 }
