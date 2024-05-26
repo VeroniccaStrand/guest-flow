@@ -21,16 +21,22 @@ const config = {
       textShadow: {
         'red': '2px 2px 4px rgba(191, 37, 25, 0.5)', // Adding red text shadow
       },
-          gridTemplateColumns: {
-        'auto-fill-100': 'repeat(auto-fill, minmax(400px, 1fr))',
-        'auto-fit-100': 'repeat(auto-fit, minmax(400px, 1fr))',
+        backgroundImage: {
+        'bg-image': "url('./assets/Welcome_toNolato_2024-1.png')",
+        'footer-texture': "url('/path-to-your-footer-texture.png')",
       },
+        gridTemplateColumns: {
+        'auto-fill-100': 'repeat(auto-fill, minmax(300px, 1fr))',
+        'auto-fit-100': 'repeat(auto-fit, minmax(200px, 3fr))',
+      },
+      
     },
   },
  
   plugins: [
      // eslint-disable-next-line no-undef
     require("daisyui"),
+    
     function ({ addUtilities }) {
       addUtilities({
          '.text-shadow': {

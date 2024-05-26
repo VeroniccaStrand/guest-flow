@@ -10,10 +10,9 @@ const AddVisitForm = () => {
     visitor_count: '',
     visiting_departments: [],
     scheduled_arrival: '',
-    welcome_message: '',
-    host: ''
+    host: '',
   });
-
+  const [visitors, setVisitors] = useState([{ name: '' }, { name: '' }, { name: '' }, { name: '' }]);
   const [showNotification, setShowNotification] = useState(false);
 
   const handleChange = (e) => {
@@ -47,6 +46,12 @@ const AddVisitForm = () => {
     }
   };
 
+  const handleVisitorChange = (index, e) => {
+    const newVisitors = [...visitors];
+    newVisitors[index][e.target.name] = e.target.value;
+    setVisitors(newVisitors);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const today = new Date().toISOString().split('T')[0];
@@ -62,7 +67,9 @@ const AddVisitForm = () => {
     }
     submissionData.append('isActive', isActive);
 
-    console.log('Submission data:', submissionData);
+    visitors.forEach((visitor, index) => {
+      submissionData.append(`visitors[${index}].name`, visitor.name);
+    });
 
     try {
       const response = await api.post('/visits', submissionData, {
@@ -80,9 +87,9 @@ const AddVisitForm = () => {
           visitor_count: '',
           visiting_departments: [],
           scheduled_arrival: '',
-          welcome_message: '',
           host: ''
         });
+        setVisitors([{ name: '' }, { name: '' }, { name: '' }, { name: '' }]);
 
         setTimeout(() => setShowNotification(false), 3000);
       }
@@ -122,7 +129,6 @@ const AddVisitForm = () => {
             placeholder="Company Info"
             value={formData.company_info}
             onChange={handleChange}
-            required
           />
         </div>
         <div>
@@ -147,7 +153,6 @@ const AddVisitForm = () => {
             placeholder="Number of Visitors"
             value={formData.visitor_count}
             onChange={handleChange}
-            required
           />
         </div>
         <div className="col-span-1 md:col-span-2">
@@ -184,20 +189,6 @@ const AddVisitForm = () => {
           />
         </div>
         <div>
-          <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="welcome_message">
-            Welcome Message
-          </label>
-          <input
-            className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
-            id="welcome_message"
-            type="text"
-            placeholder="Welcome Message"
-            value={formData.welcome_message}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="host">
             Host
           </label>
@@ -210,6 +201,24 @@ const AddVisitForm = () => {
             onChange={handleChange}
             required
           />
+        </div>
+        <div className="col-span-1 md:col-span-2">
+          <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
+            Visitors
+          </label>
+          {visitors.map((visitor, index) => (
+            <div key={index} className="flex items-center mb-2">
+              <input
+                className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
+                type="text"
+                name="name"
+                placeholder={`Visitor ${index + 1} Name`}
+                value={visitor.name}
+                onChange={(e) => handleVisitorChange(index, e)}
+                required
+              />
+            </div>
+          ))}
         </div>
         <div className="col-span-1 md:col-span-2 flex justify-end">
           <button

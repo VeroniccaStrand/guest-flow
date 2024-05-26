@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../services/api';
 import VisitContext from '../contexts/VisitContext';
 import Notification from './Notification';
+
 const EditVisitForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -14,10 +15,12 @@ const EditVisitForm = () => {
     visitor_count: '',
     visiting_departments: [],
     scheduled_arrival: '',
-    welcome_message: '',
     host: ''
   });
+  const [visitors, setVisitors] = useState([{ id: '', name: '' }]);
+  const [deletedVisitors, setDeletedVisitors] = useState([]);
   const [showNotification, setShowNotification] = useState(false);
+
   useEffect(() => {
     const visit = visits.find((visit) => visit.id === id);
     if (visit) {
@@ -29,9 +32,9 @@ const EditVisitForm = () => {
         visitor_count: visit.visitor_count || '',
         visiting_departments: visit.visiting_departments ? visit.visiting_departments.split(', ') : [],
         scheduled_arrival: formattedDateTime,
-        welcome_message: visit.welcome_message || '',
         host: visit.host || ''
       });
+      setVisitors(visit.visitors && visit.visitors.length > 0 ? visit.visitors.map(visitor => ({ id: visitor.id, name: visitor.name })) : [{ id: '', name: '' }]);
     }
   }, [id, visits]);
 
@@ -66,6 +69,24 @@ const EditVisitForm = () => {
     }
   };
 
+  const handleVisitorChange = (index, e) => {
+    const newVisitors = [...visitors];
+    newVisitors[index][e.target.name] = e.target.value;
+    setVisitors(newVisitors);
+  };
+
+  const addVisitor = () => {
+    setVisitors([...visitors, { id: '', name: '' }]);
+  };
+
+  const removeVisitor = (index) => {
+    const visitorToRemove = visitors[index];
+    if (visitorToRemove.id) {
+      setDeletedVisitors([...deletedVisitors, visitorToRemove.id]);
+    }
+    setVisitors(visitors.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const today = new Date().toISOString().split('T')[0];
@@ -77,7 +98,14 @@ const EditVisitForm = () => {
     }
     submissionData.append('isActive', isActive);
 
-    console.log('Submission data:', submissionData);
+    const existingVisitors = visitors.filter(visitor => visitor.id);
+    const newVisitors = visitors.filter(visitor => !visitor.id);
+
+    submissionData.append('existingVisitors', JSON.stringify(existingVisitors));
+    submissionData.append('newVisitors', JSON.stringify(newVisitors));
+    if (deletedVisitors.length > 0) {
+      submissionData.append('deletedVisitors', JSON.stringify(deletedVisitors));
+    }
 
     try {
       const response = await api.put(`/visits/${id}`, submissionData, {
@@ -85,13 +113,14 @@ const EditVisitForm = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      if (response.status === 201) {
+      if (response.status === 200) {
         navigate('/dashboard');
       }
     } catch (error) {
       console.error('Error updating visit', error);
     }
   };
+
   const handleDelete = async () => {
     try {
       const response = await api.delete(`/visits/${id}`);
@@ -136,7 +165,7 @@ const EditVisitForm = () => {
               placeholder="Company Info"
               value={formData.company_info}
               onChange={handleChange}
-              required
+
             />
           </div>
           <div>
@@ -198,20 +227,6 @@ const EditVisitForm = () => {
             />
           </div>
           <div>
-            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="welcome_message">
-              Welcome Message
-            </label>
-            <input
-              className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
-              id="welcome_message"
-              type="text"
-              placeholder="Welcome Message"
-              value={formData.welcome_message}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="host">
               Host
             </label>
@@ -224,6 +239,40 @@ const EditVisitForm = () => {
               onChange={handleChange}
               required
             />
+          </div>
+          <div className="col-span-2">
+            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
+              Visitors
+            </label>
+            {visitors.map((visitor, index) => (
+              <div key={index} className="flex items-center mb-2">
+                <input
+                  className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-2 px-4 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
+                  type="text"
+                  name="name"
+                  placeholder={`Visitor ${index + 1} Name`}
+                  value={visitor.name}
+                  onChange={(e) => handleVisitorChange(index, e)}
+                  required
+                />
+                {visitors.length > 1 && (
+                  <button
+                    type="button"
+                    className="ml-2 text-red-500"
+                    onClick={() => removeVisitor(index)}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="mt-2 bg-brand-red text-white py-1 px-3 rounded"
+              onClick={addVisitor}
+            >
+              Add Visitor
+            </button>
           </div>
           <div className="col-span-2 flex justify-end">
             <button
