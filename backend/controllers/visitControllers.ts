@@ -142,7 +142,6 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
       company,
       company_info,
       visitor_count,
-      visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
       scheduled_arrival: new Date(scheduled_arrival),
       host,
     };
@@ -151,9 +150,22 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
       updatedData.company_logo = company_logo;
     }
 
+    // Overwrite existing visiting_departments if new ones are provided
+    if (visiting_departments !== undefined) {
+      updatedData.visiting_departments = visiting_departments;
+      await prisma.visit.update({
+        where: { id: visitId },
+        data: { visiting_departments: '' },
+      });
+    }
+
+    // Update the visit with new data
     const updatedVisit = await prisma.visit.update({
       where: { id: visitId },
-      data: updatedData,
+      data: {
+        ...updatedData,
+        visiting_departments: visiting_departments !== undefined ? Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments : existingVisit.visiting_departments,
+      },
     });
 
     // Handle visitor deletions
