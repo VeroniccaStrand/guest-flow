@@ -22,11 +22,11 @@ const config = {
         'red': '2px 2px 4px rgba(191, 37, 25, 0.5)', // Adding red text shadow
       },
         backgroundImage: {
-        'bg-image': "url('./assets/Welcome_toNolato_2024-1.png')",
+        'bg-image': "url('assets/Welcome_toNolato_2024-1.png')",
         'footer-texture': "url('/path-to-your-footer-texture.png')",
       },
         gridTemplateColumns: {
-        'auto-fill-100': 'repeat(auto-fill, minmax(300px, 1fr))',
+        'auto-fill-100': 'repeat(auto-fill, minmax(500px, 1fr))',
         'auto-fit-100': 'repeat(auto-fit, minmax(200px, 3fr))',
       },
       
