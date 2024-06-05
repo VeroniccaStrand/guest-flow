@@ -9,7 +9,23 @@ const UserContext = createContext();
 const UserProvider = ({ children }) => {
 
   const [loggedIn, setLoggedIn] = useState(false);
+  const [users, setUsers] = useState([])
 
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await api.get('/users')
+        const data = await response.data
+
+        setUsers(data)
+        console.log(data);
+      } catch (error) {
+        console.error('Error fetching Users', error)
+      }
+    }
+    fetchUsers()
+  }, [])
 
   const getTokenFromCookies = () => {
     const cookieString = document.cookie;
@@ -71,7 +87,7 @@ const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ login, loggedIn, logout }}>
+    <UserContext.Provider value={{ login, loggedIn, logout, users }}>
       {children}
     </UserContext.Provider>
   );

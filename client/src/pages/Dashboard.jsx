@@ -2,7 +2,7 @@ import AddVisitForm from '../components/AddVisitForm'
 import VisitList from '../components/VisitList';
 import VisitContext from '../contexts/VisitContext'
 import { useContext } from 'react';
-
+import UserComponent from '../components/UserComponent';
 const Dashboard = () => {
   const { visits, isLoading } = useContext(VisitContext);
 
@@ -28,6 +28,9 @@ const Dashboard = () => {
             <div className="bg-white shadow-md rounded p-4">
               <AddVisitForm />
             </div>
+          </div>
+          <div className='col-span-3'>
+            <UserComponent />
           </div>
         </div>
       </div>
