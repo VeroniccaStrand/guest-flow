@@ -17,6 +17,7 @@ const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const server_1 = require("../server");
 const prisma = new client_1.PrismaClient();
 // @desc    Register new user
 // @route   POST /api/users
@@ -46,6 +47,8 @@ exports.registerUser = (0, express_async_handler_1.default)((req, res) => __awai
             role: role,
         },
     });
+    server_1.io.emit('addedUser', (user));
+    console.log('socket');
     // Send response if user is created successfully
     if (user) {
         res.status(201).json({
@@ -98,6 +101,7 @@ exports.loginUser = (0, express_async_handler_1.default)((req, res) => __awaiter
 // @access  Private / ADMIN
 exports.deleteUser = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username } = req.body;
+    console.log('delete backend user');
     // Check if the user exists before attempting to delete
     const user = yield prisma.user.findUnique({
         where: { username },
@@ -107,14 +111,17 @@ exports.deleteUser = (0, express_async_handler_1.default)((req, res) => __awaite
         res.status(404);
         throw new Error('User not found');
     }
+    console.log('delete');
     // Proceed with deletion if user exists
     yield prisma.user.delete({
         where: { username },
     });
+    server_1.io.emit('deletedUser', { username: username });
+    console.log('socket');
     // Send response indicating successful deletion
     res.status(200).json({
         username: user.username,
-        message: 'User deleted successfully',
+        message: 'User deleted successfully najs',
     });
 }));
 // @desc    Get all users

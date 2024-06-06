@@ -180,7 +180,7 @@ const AddVisitForm = () => {
             Scheduled Arrival
           </label>
           <input
-            className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
+            className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text custom-calendar-icon"
             id="scheduled_arrival"
             type="datetime-local"
             value={formData.scheduled_arrival}
@@ -205,7 +205,7 @@ const AddVisitForm = () => {
         <div className="col-span-1 md:col-span-2">
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
             Visitors
-            <p className=' font-normal  normal-case text-brand-red'>More then 4 visitors? Add a groupname. e.g Group of 6 people, or your own welcome frace.</p>
+            <p className='  normal-case text-brand-red  '>More then 4 visitors? Add a groupname. e.g Group of 6 people, or your own welcome frace.</p>
           </label>
           {visitors.map((visitor, index) => (
             <div key={index} className="flex items-center mb-2">

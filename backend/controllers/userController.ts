@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import asyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import { Response, Request, response } from 'express';
+import { io } from '../server';
 
 const prisma = new PrismaClient();
 
@@ -38,7 +39,8 @@ export const registerUser = asyncHandler(async (req: Request, res: Response) => 
       role: role,
     },
   });
-
+  io.emit('addedUser', (user));
+  console.log('socket')
   // Send response if user is created successfully
   if (user) {
     res.status(201).json({
@@ -95,9 +97,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 // @desc    Delete User
 // @route   DELETE /api/users
 // @access  Private / ADMIN
+
 export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
   const { username } = req.body;
-
+  console.log('delete backend user')
   // Check if the user exists before attempting to delete
   const user = await prisma.user.findUnique({
     where: { username },
@@ -108,19 +111,20 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
     res.status(404);
     throw new Error('User not found');
   }
+  console.log('delete')
 
   // Proceed with deletion if user exists
   await prisma.user.delete({
     where: { username },
   });
-
+   io.emit('deletedUser', { username: username });
+  console.log('socket')
   // Send response indicating successful deletion
   res.status(200).json({
     username: user.username,
-    message: 'User deleted successfully',
+    message: 'User deleted successfully najs',
   });
 });
-
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private / ADMIN

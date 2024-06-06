@@ -1,8 +1,7 @@
 
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { formatDate } from '../utils/formatDate'; // Assuming you have a utility function to format dates
-
+import { formatDate } from '../utils/formatDate';
 const Visit = ({ visit }) => {
 
   return (
@@ -11,13 +10,13 @@ const Visit = ({ visit }) => {
         {visit.company}
         <div className="text-sm text-secondary-text">{visit.company_info}</div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-text">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-primary-text">
         {visit.visitor_count}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-text">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-text">
         {visit.visiting_departments}
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-secondary-text">
+      <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-text">
         {formatDate(visit.scheduled_arrival)}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-left text-sm font-medium">

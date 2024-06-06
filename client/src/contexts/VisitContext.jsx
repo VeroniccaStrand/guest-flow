@@ -27,19 +27,19 @@ export const VisitProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000'); // Sätt rätt URL för din backend
+    const socket = io('http://localhost:3000');
 
     socket.on('connect', () => {
       console.log('Socket connected');
     });
 
     socket.on('newVisit', (newVisit) => {
-      console.log('New visit received:', newVisit); // Debugging line
+      console.log('New visit received:', newVisit);
       setVisit((prevVisits) => [...prevVisits, newVisit]);
     });
 
     socket.on('updateVisit', (updatedVisit) => {
-      console.log('Updated visit received:', updatedVisit); // Debugging line
+      console.log('Updated visit received:', updatedVisit);
       setVisit((prevVisits) =>
         prevVisits.map((visit) =>
           visit.id === updatedVisit.id ? updatedVisit : visit

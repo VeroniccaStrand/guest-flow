@@ -1,7 +1,7 @@
 // src/contexts/userContext.js
 import { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-
+import io from 'socket.io-client';
 import { api } from '../services/api';
 
 const UserContext = createContext();
@@ -10,10 +10,11 @@ const UserProvider = ({ children }) => {
 
   const [loggedIn, setLoggedIn] = useState(false);
   const [users, setUsers] = useState([])
-
+  const [isLoadingUsers, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setIsLoading(true)
       try {
         const response = await api.get('/users')
         const data = await response.data
@@ -23,10 +24,11 @@ const UserProvider = ({ children }) => {
       } catch (error) {
         console.error('Error fetching Users', error)
       }
+      setIsLoading(false);
     }
     fetchUsers()
   }, [])
-
+  console.log(users)
   const getTokenFromCookies = () => {
     const cookieString = document.cookie;
     console.log(cookieString)
@@ -39,6 +41,31 @@ const UserProvider = ({ children }) => {
     }
     return null;
   };
+
+  useEffect(() => {
+    const socket = io('http://localhost:3000');
+
+    socket.on('connect', () => {
+      console.log('Socket connected');
+    });
+
+    socket.on('deletedUser', ({ username }) => {
+      console.log('User deleted:', username); // Lägg till loggning för felsökning
+      setUsers((prevUsers) => prevUsers.filter((users) => users.username !== username));
+    });
+    socket.on('addedUser', (newUser) => {
+      console.log('New user received:', newUser);
+      setUsers((prevUsers) => [...prevUsers, newUser]);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const token = getTokenFromCookies();
@@ -87,7 +114,7 @@ const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ login, loggedIn, logout, users }}>
+    <UserContext.Provider value={{ login, loggedIn, logout, users, isLoadingUsers }}>
       {children}
     </UserContext.Provider>
   );

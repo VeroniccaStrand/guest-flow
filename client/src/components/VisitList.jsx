@@ -9,20 +9,20 @@ const VisitList = ({ visits }) => {
   }
   const sortedVisits = [...visits].sort((a, b) => new Date(a.scheduled_arrival) - new Date(b.scheduled_arrival));
   return (
-    <div className="overflow-x-auto container mx-auto ">
+    <div className="container">
       <table className="min-w-full divide-y divide-gray-200 shadow-lg">
         <thead className="bg-secondary-bg">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-primary-text uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
               Company
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-primary-text uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
               Number of Visitors
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-primary-text uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
               Visiting Department
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-primary-text uppercase tracking-wider">
+            <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
               Scheduled Arrival
             </th>
             <th className="px-6 py-3 text-primary-text tracking-wider">

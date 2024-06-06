@@ -140,16 +140,24 @@ exports.updateVisit = (0, express_async_handler_1.default)((req, res) => __await
             company,
             company_info,
             visitor_count,
-            visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
             scheduled_arrival: new Date(scheduled_arrival),
             host,
         };
         if (company_logo) {
             updatedData.company_logo = company_logo;
         }
+        // Overwrite existing visiting_departments if new ones are provided
+        if (visiting_departments !== undefined) {
+            updatedData.visiting_departments = visiting_departments;
+            yield prisma.visit.update({
+                where: { id: visitId },
+                data: { visiting_departments: '' },
+            });
+        }
+        // Update the visit with new data
         const updatedVisit = yield prisma.visit.update({
             where: { id: visitId },
-            data: updatedData,
+            data: Object.assign(Object.assign({}, updatedData), { visiting_departments: visiting_departments !== undefined ? Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments : existingVisit.visiting_departments }),
         });
         // Handle visitor deletions
         if (deletedVisitors) {
