@@ -7,7 +7,7 @@ import WelcomePage from './pages/WelcomePage';
 
 const Layout = () => {
   const location = useLocation();
-  const hideNavbarRoutes = ['/welcome'];
+  const hideNavbarRoutes = ['/welcome', '/'];
 
   return (
     <>

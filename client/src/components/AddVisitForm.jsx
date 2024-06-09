@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { api } from '../services/api';
 import Notification from './Notification';
-
+import { useContext } from 'react';
+import { UserContext } from '../contexts/UserContext';
 const AddVisitForm = () => {
   const [formData, setFormData] = useState({
     company: '',
@@ -14,7 +15,7 @@ const AddVisitForm = () => {
   });
   const [visitors, setVisitors] = useState([{ name: '' }, { name: '' }, { name: '' }, { name: '' }]);
   const [showNotification, setShowNotification] = useState(false);
-
+  const { userRole } = useContext(UserContext);
   const handleChange = (e) => {
     const { id, value, type, checked, name, files } = e.target;
     if (type === 'checkbox' && name === 'visiting_departments') {
@@ -140,6 +141,7 @@ const AddVisitForm = () => {
             id="company_logo"
             type="file"
             onChange={handleChange}
+            disabled={userRole !== 'ADMIN'}
           />
         </div>
         <div>

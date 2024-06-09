@@ -7,31 +7,14 @@ import { api } from '../services/api';
 const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
-
   const [loggedIn, setLoggedIn] = useState(false);
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoading] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setIsLoading(true)
-      try {
-        const response = await api.get('/users')
-        const data = await response.data
-
-        setUsers(data)
-        console.log(data);
-      } catch (error) {
-        console.error('Error fetching Users', error)
-      }
-      setIsLoading(false);
-    }
-    fetchUsers()
-  }, [])
-  console.log(users)
   const getTokenFromCookies = () => {
     const cookieString = document.cookie;
-    console.log(cookieString)
+    console.log('Cookies:', cookieString);
     const cookies = cookieString.split(';');
     for (let cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
@@ -43,6 +26,40 @@ const UserProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    const token = getTokenFromCookies();
+    if (token) {
+      const decodedToken = JSON.parse(atob(token.split('.')[1])); // Förutsatt att token är en JWT
+      setUserRole(decodedToken.role); // Anpassa detta baserat på din tokenstruktur
+      setLoggedIn(true);
+    } else {
+      setUserRole(null);
+      setLoggedIn(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!loggedIn || userRole !== 'ADMIN') return; // Vänta tills användaren är autentiserad och är admin
+      setIsLoading(true);
+      console.log("Fetching users...");
+      try {
+        const response = await api.get('/users');
+        const data = response.data;
+
+        setUsers(data);
+        console.log('Fetched users:', data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setIsLoading(false);
+        console.log('Fetch users complete');
+      }
+    };
+
+    fetchUsers();
+  }, [loggedIn, userRole]); // Körs när loggedIn eller userRole ändras
+
+  useEffect(() => {
     const socket = io('http://localhost:3000');
 
     socket.on('connect', () => {
@@ -50,9 +67,10 @@ const UserProvider = ({ children }) => {
     });
 
     socket.on('deletedUser', ({ username }) => {
-      console.log('User deleted:', username); // Lägg till loggning för felsökning
-      setUsers((prevUsers) => prevUsers.filter((users) => users.username !== username));
+      console.log('User deleted:', username);
+      setUsers((prevUsers) => prevUsers.filter((user) => user.username !== username));
     });
+
     socket.on('addedUser', (newUser) => {
       console.log('New user received:', newUser);
       setUsers((prevUsers) => [...prevUsers, newUser]);
@@ -67,19 +85,7 @@ const UserProvider = ({ children }) => {
     };
   }, []);
 
-  useEffect(() => {
-    const token = getTokenFromCookies();
-    if (token) {
-      setLoggedIn(true);
-
-    } else {
-      setLoggedIn(false);
-    }
-  }, []);
-
-
   const login = async (username, password) => {
-
     try {
       const success = await api.post('/users/login', {
         username,
@@ -87,34 +93,32 @@ const UserProvider = ({ children }) => {
       });
       if (success !== false) {
         setLoggedIn(true);
+        // Få användarroll efter inloggning
+        const token = getTokenFromCookies();
+        const decodedToken = JSON.parse(atob(token.split('.')[1])); // Förutsatt att token är en JWT
+        setUserRole(decodedToken.role); // Anpassa detta baserat på din tokenstruktur
         return true;
       } else {
-        return false
+        return false;
       }
-
     } catch (error) {
       console.error(error);
+      return false;
     }
   };
 
-
-
-
-
   const logout = async () => {
     try {
-      await api.post('/users/logout'); // Gör en POST-förfrågan till backend för att logga ut
-
-
+      await api.post('/users/logout');
       setLoggedIn(false);
-
+      setUserRole(null);
     } catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
   return (
-    <UserContext.Provider value={{ login, loggedIn, logout, users, isLoadingUsers }}>
+    <UserContext.Provider value={{ login, loggedIn, logout, users, isLoadingUsers, userRole }}>
       {children}
     </UserContext.Provider>
   );
