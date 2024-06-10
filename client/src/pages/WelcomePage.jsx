@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import VisitContext from '../contexts/VisitContext';
-import nolato from '../assets/nolato-logo-redblack.png';
+import nolato from '/assets/nolato-logo-redblack.png';
 
 const WelcomePage = () => {
   const { visits, isLoading } = useContext(VisitContext);
@@ -33,7 +33,7 @@ const WelcomePage = () => {
       </div>
       <div className="flex flex-col  overflow-hidden">
         <header className="mb-6 flex flex-col m-10 self-end ">
-          <h1 className="text-xl sm:text-9xl md:text-3xl lg:text-8xl xl:text-9xl text-primary-text font-bold text-shadow-lg">
+          <h1 className="text-5xl   5xl:text-9xl text-primary-text font-bold text-shadow-lg">
             Welcome to Torekov
           </h1>
           <div className="flex space-x-2 text-lg sm:text-2xl items-center justify-end  text-nyans-text font-light mt-[-10px]">
@@ -46,7 +46,7 @@ const WelcomePage = () => {
         </header>
         <div className='container grid  h-full  items-center pr-10'>
 
-          <div className="grid grid-cols-auto-fill-100 gap-10 mb-4 mt-10   relative">
+          <div className="grid grid-cols-auto-fill-sm 5xl:grid-cols-auto-fill-100 gap-10 mb-4 mt-10   relative">
             {todaysVisits.length > 0 ? (
               todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
@@ -55,13 +55,13 @@ const WelcomePage = () => {
 
                   <div key={visit.id} className=' shadow-lg  rounded p-4 relative'>
                     <div className='absolute top-[-1rem] left-[10px]    rounded-lg px-2'>
-                      <h2 className='text-4xl text-primary-text font-semibold '>{visit.company}</h2>
+                      <h2 className='text-xl 5xl:text-4xl text-primary-text font-semibold '>{visit.company}</h2>
                     </div>
-                    <div className='mb-4 mt-4'>
-                      <p className='text-nyans-text text-ms mt-[-15px]'>{visit.company_info}</p>
+                    <div className=''>
+                      <p className='text-nyans-text text-ms mt-[-10px]'>{visit.company_info}</p>
                     </div>
 
-                    <div className='text-nyans-text -space-y-0.5 font-bold mt-14 '>
+                    <div className='text-nyans-text -space-y-0.5 font-bold mt-5 '>
                       <div className='  gap-2'>
                         {visitorNames.map((name, index) => (
 
@@ -71,7 +71,7 @@ const WelcomePage = () => {
                       </div>
 
                     </div>
-                    <p className='text-brand-red text-sm mt-5'>Your host today will be <span className='font-bold'>{visit.host}</span> </p>
+                    <p className='text-brand-red text-sm mb-5'>Your host today will be <span className='font-bold'>{visit.host}</span> </p>
                     <div >
                       <p className=' absolute bottom-0 right-0 p-4 text-black  font-extrabold '>   {visit.visiting_departments}</p>
 

@@ -21,6 +21,7 @@ const config = {
         'hero-image': "url('assets/hero.webp')",
       },
       gridTemplateColumns: {
+        'auto-fill-sm': 'repeat(auto-fill, minmax(300px, 1fr))',
         'auto-fill-100': 'repeat(auto-fill, minmax(500px, 1fr))',
         'auto-fit-100': 'repeat(auto-fit, minmax(200px, 3fr))',
       },
