@@ -1,6 +1,6 @@
 # Logs
 .uploads
-assets
+
 logs
 *.log
 npm-debug.log*
