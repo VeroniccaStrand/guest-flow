@@ -61,7 +61,7 @@ const UserProvider = ({ children }) => {
   }, [loggedIn, userRole]);
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_SOCKET_URL);
+    const socket = io('http://localhost:3000');
 
     socket.on('connect', () => {
       console.log('Socket connected');
