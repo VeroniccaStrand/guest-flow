@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from 'react';
 import VisitContext from '../contexts/VisitContext';
-import nolato from '/assets/nolato-logo-redblack.png';
+import nolato from '../assets/nolato-logo-redblack.png';
 
 const WelcomePage = () => {
   const { visits, isLoading } = useContext(VisitContext);

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { api } from '../services/api';
 import Notification from './Notification';
-import { useContext } from 'react';
 import { UserContext } from '../contexts/UserContext';
+
 const AddVisitForm = () => {
   const [formData, setFormData] = useState({
     company: '',
@@ -13,9 +13,10 @@ const AddVisitForm = () => {
     scheduled_arrival: '',
     host: '',
   });
-  const [visitors, setVisitors] = useState([{ name: '' }, { name: '' }, { name: '' }, { name: '' }]);
+  const [visitors, setVisitors] = useState([{ name: '' }]);
   const [showNotification, setShowNotification] = useState(false);
   const { userRole } = useContext(UserContext);
+
   const handleChange = (e) => {
     const { id, value, type, checked, name, files } = e.target;
     if (type === 'checkbox' && name === 'visiting_departments') {
@@ -37,7 +38,7 @@ const AddVisitForm = () => {
     } else if (type === 'file') {
       setFormData((prevData) => ({
         ...prevData,
-        company_logo: files[0],  // files[0] contains the uploaded file
+        company_logo: files[0],
       }));
     } else {
       setFormData((prevData) => ({
@@ -53,6 +54,15 @@ const AddVisitForm = () => {
     setVisitors(newVisitors);
   };
 
+  const addVisitor = () => {
+    setVisitors([...visitors, { name: '' }]);
+  };
+
+  const removeVisitor = (index) => {
+    const newVisitors = visitors.filter((_, i) => i !== index);
+    setVisitors(newVisitors);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const today = new Date().toISOString().split('T')[0];
@@ -61,7 +71,7 @@ const AddVisitForm = () => {
     const submissionData = new FormData();
     for (const key in formData) {
       if (key === 'company_logo' && formData[key]) {
-        submissionData.append(key, formData[key], formData[key].name);  // Append the file with its name
+        submissionData.append(key, formData[key], formData[key].name);
       } else {
         submissionData.append(key, formData[key]);
       }
@@ -90,7 +100,7 @@ const AddVisitForm = () => {
           scheduled_arrival: '',
           host: ''
         });
-        setVisitors([{ name: '' }, { name: '' }, { name: '' }, { name: '' }]);
+        setVisitors([{ name: '' }]);
 
         setTimeout(() => setShowNotification(false), 3000);
       }
@@ -207,7 +217,6 @@ const AddVisitForm = () => {
         <div className="col-span-1 md:col-span-2">
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
             Visitors
-            <p className='  normal-case text-brand-red  '>More then 4 visitors? Add a groupname. e.g Group of 6 people, or your own welcome frace.</p>
           </label>
           {visitors.map((visitor, index) => (
             <div key={index} className="flex items-center mb-2">
@@ -220,8 +229,22 @@ const AddVisitForm = () => {
                 onChange={(e) => handleVisitorChange(index, e)}
                 required
               />
+              <button
+                type="button"
+                onClick={() => removeVisitor(index)}
+                className="ml-2 p-2 bg-red-500 text-white rounded"
+              >
+                Remove
+              </button>
             </div>
           ))}
+          <button
+            type="button"
+            onClick={addVisitor}
+            className="mt-2 p-2 bg-green-500 text-white rounded"
+          >
+            Add Visitor
+          </button>
         </div>
         <div className="col-span-1 md:col-span-2 flex justify-end">
           <button

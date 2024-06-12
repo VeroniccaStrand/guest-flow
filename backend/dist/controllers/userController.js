@@ -130,6 +130,7 @@ exports.deleteUser = (0, express_async_handler_1.default)((req, res) => __awaite
 exports.getAllUsers = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Retrieve all users from the database
     const users = yield prisma.user.findMany();
+    console.log('backend user');
     // Send the list of users as the response
     res.status(200).json(users);
 }));

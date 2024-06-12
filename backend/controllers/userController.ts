@@ -131,7 +131,7 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   // Retrieve all users from the database
   const users = await prisma.user.findMany();
-
+console.log('backend user')
   // Send the list of users as the response
   res.status(200).json(users);
 });

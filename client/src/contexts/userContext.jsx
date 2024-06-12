@@ -1,4 +1,3 @@
-// src/contexts/userContext.js
 import { createContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import io from 'socket.io-client';
@@ -14,7 +13,6 @@ const UserProvider = ({ children }) => {
 
   const getTokenFromCookies = () => {
     const cookieString = document.cookie;
-    console.log('Cookies:', cookieString);
     const cookies = cookieString.split(';');
     for (let cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
@@ -28,8 +26,8 @@ const UserProvider = ({ children }) => {
   useEffect(() => {
     const token = getTokenFromCookies();
     if (token) {
-      const decodedToken = JSON.parse(atob(token.split('.')[1])); // Förutsatt att token är en JWT
-      setUserRole(decodedToken.role); // Anpassa detta baserat på din tokenstruktur
+      const decodedToken = JSON.parse(atob(token.split('.')[1]));
+      setUserRole(decodedToken.role);
       setLoggedIn(true);
     } else {
       setUserRole(null);
@@ -39,40 +37,41 @@ const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      if (!loggedIn || userRole !== 'ADMIN') return; // Vänta tills användaren är autentiserad och är admin
+      if (!loggedIn || userRole !== 'ADMIN') return;
       setIsLoading(true);
-      console.log("Fetching users...");
       try {
-        const response = await api.get('/users');
-        const data = response.data;
+        const response = await api.get(`api/users`);
+        const data = await response.data;
+        console.log(data)
+        if (Array.isArray(data)) {
+          setUsers(data);
+        } else {
 
-        setUsers(data);
-        console.log('Fetched users:', data);
+          setUsers([]);
+        }
       } catch (error) {
         console.error('Error fetching users:', error);
+        setUsers([]); // Sätt en tom array vid fel
       } finally {
         setIsLoading(false);
-        console.log('Fetch users complete');
       }
     };
 
     fetchUsers();
-  }, [loggedIn, userRole]); // Körs när loggedIn eller userRole ändras
+  }, [loggedIn, userRole]);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
+    const socket = io(import.meta.env.VITE_SOCKET_URL);
 
     socket.on('connect', () => {
       console.log('Socket connected');
     });
 
     socket.on('deletedUser', ({ username }) => {
-      console.log('User deleted:', username);
       setUsers((prevUsers) => prevUsers.filter((user) => user.username !== username));
     });
 
     socket.on('addedUser', (newUser) => {
-      console.log('New user received:', newUser);
       setUsers((prevUsers) => [...prevUsers, newUser]);
     });
 
@@ -87,31 +86,32 @@ const UserProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const success = await api.post('/users/login', {
-        username,
-        password,
-      });
-      if (success !== false) {
+      const response = await api.post(`users/login`, { username, password });
+      if (response.status === 200) {
         setLoggedIn(true);
-        // Få användarroll efter inloggning
         const token = getTokenFromCookies();
-        const decodedToken = JSON.parse(atob(token.split('.')[1])); // Förutsatt att token är en JWT
-        setUserRole(decodedToken.role); // Anpassa detta baserat på din tokenstruktur
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        setUserRole(decodedToken.role);
         return true;
       } else {
+        console.error('Login failed', response.statusText);
         return false;
       }
     } catch (error) {
-      console.error(error);
+      console.error('Error during login:', error);
       return false;
     }
   };
 
   const logout = async () => {
     try {
-      await api.post('/users/logout');
-      setLoggedIn(false);
-      setUserRole(null);
+      const response = await api.post(`users/logout`);
+      if (response.status === 200) {
+        setLoggedIn(false);
+        setUserRole(null);
+      } else {
+        console.error('Logout failed', response.statusText);
+      }
     } catch (error) {
       console.error('Logout failed:', error);
     }
