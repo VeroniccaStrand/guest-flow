@@ -43,6 +43,7 @@ exports.io.on('connection', (socket) => {
     const clientAddress = socket.handshake.address;
     const connectTime = new Date().toISOString();
     console.log(`New client connected from ${clientAddress} at ${connectTime}`);
+    console.log(clientAddress);
     socket.on('disconnect', () => {
         const disconnectTime = new Date().toISOString();
         console.log(`Client disconnected from ${clientAddress} at ${disconnectTime}`);

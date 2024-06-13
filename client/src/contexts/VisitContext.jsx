@@ -27,7 +27,7 @@ export const VisitProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
+    const socket = io('http:// 172.20.78.49:3000');
 
     socket.on('connect', () => {
       console.log('Socket connected');

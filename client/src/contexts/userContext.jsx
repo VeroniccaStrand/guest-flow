@@ -40,7 +40,7 @@ const UserProvider = ({ children }) => {
       if (!loggedIn || userRole !== 'ADMIN') return;
       setIsLoading(true);
       try {
-        const response = await api.get(`api/users`);
+        const response = await api.get(`/users`);
         const data = await response.data;
         console.log(data)
         if (Array.isArray(data)) {
@@ -61,7 +61,7 @@ const UserProvider = ({ children }) => {
   }, [loggedIn, userRole]);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
+    const socket = io('http://172.20.78.49:3000');
 
     socket.on('connect', () => {
       console.log('Socket connected');

@@ -19,7 +19,7 @@ const Navbar = () => {
 
     <nav className='bg-custom-bg p-4 navbar '>
       <div className='h-32 w-32 mx-10 '>
-        <img src=" ../assets/nolato-logo-redblack.png" alt="Nolato-logo" />
+        <img src=" ../src/assets/nolato-logo-redblack.png" alt="Nolato-logo" />
       </div>
       <div className='container mx-auto flex justify-between items-center'>
 
