@@ -56,6 +56,6 @@ io.on('connection', (socket) => {
 });
 // Start the server
 const port = parseInt(process.env.PORT || '3000', 10);
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port: ${port}`);
 });

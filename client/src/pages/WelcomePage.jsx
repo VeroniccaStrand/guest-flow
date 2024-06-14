@@ -11,7 +11,9 @@ const WelcomePage = () => {
     const filteredVisits = visits.filter(visit => {
       const scheduledArrival = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
       return scheduledArrival === today;
+     
     });
+    console.log('visits updated')
     setTodaysVisits(filteredVisits);
   }, [visits, today]);
 
@@ -27,7 +29,7 @@ const WelcomePage = () => {
   };
 
   return (
-    <div className="grid grid-cols-[2fr_3fr] h-screen bg-bg-image bg-center bg-cover">
+    <div className="grid grid-cols-[2fr_3fr] h-screen  bg-center bg-cover">
       <div className="flex items-start  m-10">
         <img src={nolato} alt="Company Logo" className="h-24 sm:h-36" />
       </div>
