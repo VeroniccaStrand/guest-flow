@@ -17,12 +17,12 @@ const config = {
       },
 
       backgroundImage: {
-        'bg-image': "url('assets/Welcome_toNolato_2024-1.png')",
-        'hero-image': "url('assets/hero.webp')",
+        'bg-image': "url('assets/Welcome_toNolato_2024-1080p.png')",
+        
       },
       gridTemplateColumns: {
         'auto-fill-sm': 'repeat(auto-fill, minmax(300px, 1fr))',
-        'auto-fill-100': 'repeat(auto-fill, minmax(500px, 1fr))',
+        'auto-fill-100': 'repeat(auto-fill, minmax(700px, 1fr))',
         'auto-fit-100': 'repeat(auto-fit, minmax(200px, 3fr))',
       },
     },

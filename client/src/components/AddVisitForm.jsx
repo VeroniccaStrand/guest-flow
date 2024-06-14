@@ -172,7 +172,7 @@ const AddVisitForm = () => {
             Visiting Departments
           </label>
           <div className="flex flex-wrap">
-            {['Polymer', 'Meditor', 'Nolato AB'].map((department) => (
+            {['Polymer', 'MediTor', 'Nolato AB'].map((department) => (
               <label key={department} className="mr-4">
                 <input
                   className="mr-2 leading-tight"
