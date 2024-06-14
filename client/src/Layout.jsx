@@ -4,10 +4,10 @@ import FrontPage from './pages/FrontPage';
 import Dashboard from './pages/Dashboard';
 import EditPage from './pages/EditPage';
 import WelcomePage from './pages/WelcomePage';
-
+import PolymerPage from './pages/PolymerPage'
 const Layout = () => {
   const location = useLocation();
-  const hideNavbarRoutes = ['/welcome', '/'];
+  const hideNavbarRoutes = ['/welcome', '/','/polymer'];
 
   return (
     <>
@@ -17,6 +17,7 @@ const Layout = () => {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/visit/:id' element={<EditPage />} />
         <Route path='/welcome' element={<WelcomePage />} />
+        <Route path='/polymer' element={<PolymerPage/>}/>
       </Routes>
     </>
   );

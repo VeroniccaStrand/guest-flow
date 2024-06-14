@@ -29,16 +29,16 @@ const WelcomePage = () => {
   };
 
   return (
-    <div className="grid grid-cols-[1.5fr_3.5fr] h-screen bg-bg-image bg-center bg-cover p-10">
+    <div className="grid grid-cols-[1.5fr_3.5fr] h-screen  bg-center bg-cover p-10">
       <div className="flex items-start xl:p-10">
         <img src={nolato} alt="Company Logo" className="h-24 sm:h-36" />
       </div>
       <div className="flex flex-col  overflow-hidden">
         <header className="mb-6 flex flex-col m-10 self-end ">
-          <h1 className="text-5xl   xl:text-8xl text-primary-text font-bold text-shadow-lg">
+          <h1 className="text-2xl   xl:text-4xl text-primary-text font-bold text-shadow-lg">
             Welcome to Torekov
           </h1>
-          <div className="flex space-x-2 text-lg sm:text-2xl items-center justify-end  text-nyans-text font-light mt-[-10px]">
+          <div className="flex space-x-2 text-lg sm:text-xl items-center justify-end  text-nyans-text font-light mt-[-10px]">
             <p>Nolato AB</p>
             <div className="divider w-1 h-6 bg-neutral mx-2"></div>
             <p>Nolato MediTor AB</p>
@@ -48,16 +48,16 @@ const WelcomePage = () => {
         </header>
         <div className='container grid  h-full  items-center'>
 
-          <div className="grid grid-cols-auto-fill-sm 5xl:grid-cols-auto-fill-100 gap-8 min-h-[600px] mb-4 mt-10 mr-10 ml-10 relative">
+          <div className="grid grid-cols-auto-fill-sm 5xl:grid-cols-auto-fill-100 gap-6 min-h-[400px] mb-4  mr-10 ml-10 relative">
             {todaysVisits.length > 0 ? (
               todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
                 const fontSizeClass = getFontSize(visitorNames.length);
                 return (
 
-                  <div key={visit.id} className=' shadow-xl  rounded p-4 relative flex flex-col  bg-stone-200 bg-opacity-60 justify-between'>
+                  <div key={visit.id} className=' shadow-xl  rounded p-4 relative flex flex-col  bg-stone-100 bg-opacity-60 justify-between'>
                     <div className='    rounded-lg '>
-                      <h2 className=' 2xl:text-3xl text-primary-text font-semibold '>{visit.company}</h2>
+                      <h2 className=' 2xl:text-1xl text-primary-text font-semibold '>{visit.company}</h2>
                       <p className='text-nyans-text text-ms mt-[-5px] '>{visit.company_info}</p>
                     </div>
                     
@@ -85,7 +85,7 @@ const WelcomePage = () => {
               })
             ) : (
               <div className="flex flex-col items-center justify-center text-center rounded-lg p-6 w-full bg-white bg-opacity-70">
-                <div className="text-xl sm:text-2xl text-primary-text font-semibold mb-2">
+                <div className="text-xl sm:text-xl text-primary-text font-semibold mb-2">
                   No visits today
                 </div>
               </div>
