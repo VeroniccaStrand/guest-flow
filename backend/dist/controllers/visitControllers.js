@@ -16,26 +16,17 @@ exports.getAllVisits = exports.deleteVisit = exports.updateVisit = exports.addVi
 const express_async_handler_1 = __importDefault(require("express-async-handler"));
 const client_1 = require("@prisma/client");
 const server_1 = require("../server");
-const multer_1 = __importDefault(require("multer"));
-const fs_1 = __importDefault(require("fs"));
 const prisma = new client_1.PrismaClient();
-const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 // Helper function to close Prisma client
 const closePrismaClient = () => __awaiter(void 0, void 0, void 0, function* () {
     yield prisma.$disconnect();
 });
-// Helper function to convert base64 to Buffer
-const base64ToBuffer = (base64) => {
-    const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
-    return Buffer.from(base64Data, 'base64');
-};
 // @desc    Add new Visit with details
 // @route   POST /api/visits
 // @access  Private
 exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file);
     const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host } = req.body;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     if (!userId) {
@@ -48,19 +39,6 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
         console.error('Invalid date format for scheduled_arrival');
         res.status(400).json({ message: 'Invalid date format for scheduled_arrival' });
         return;
-    }
-    let companyLogoBuffer = null;
-    if (req.file) {
-        try {
-            const filePath = req.file.path;
-            companyLogoBuffer = fs_1.default.readFileSync(filePath);
-            fs_1.default.unlinkSync(filePath); // Remove the temporary file
-        }
-        catch (error) {
-            console.error('Error processing uploaded file:', error);
-            res.status(400).json({ message: 'Invalid image data' });
-            return;
-        }
     }
     // Construct visitors array from the request body
     const visitors = [];
@@ -75,7 +53,6 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
             data: {
                 company,
                 company_info,
-                company_logo: companyLogoBuffer,
                 visitor_count,
                 visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
                 scheduled_arrival: scheduledArrivalDate,
@@ -116,17 +93,7 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
 exports.updateVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const visitId = req.params.id;
     console.log('Request body:', req.body);
-    console.log('Uploaded file:', req.file);
     const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host, existingVisitors, newVisitors, deletedVisitors } = req.body;
-    let company_logo = req.file ? req.file.path : null;
-    if (req.file) {
-        const filePath = req.file.path;
-        const fileBuffer = fs_1.default.readFileSync(filePath);
-        company_logo = fileBuffer.toString('base64'); // Convert Buffer to base64 string
-    }
-    else if (company_logo && company_logo.startsWith('data:image/')) {
-        company_logo = base64ToBuffer(company_logo).toString('base64');
-    }
     try {
         const existingVisit = yield prisma.visit.findUnique({
             where: { id: visitId },
@@ -143,9 +110,6 @@ exports.updateVisit = (0, express_async_handler_1.default)((req, res) => __await
             scheduled_arrival: new Date(scheduled_arrival),
             host,
         };
-        if (company_logo) {
-            updatedData.company_logo = company_logo;
-        }
         // Overwrite existing visiting_departments if new ones are provided
         if (visiting_departments !== undefined) {
             updatedData.visiting_departments = visiting_departments;
@@ -238,16 +202,10 @@ exports.deleteVisit = (0, express_async_handler_1.default)((req, res) => __await
 // @route   GET /api/visits
 // @access  Public
 // Convert buffer to base64
-const bufferToBase64 = (buffer) => {
-    return buffer.toString('base64');
-};
 exports.getAllVisits = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const visits = yield prisma.visit.findMany({
         include: {
             visitors: true, // Include related visitors
         },
     });
-    // Convert buffer to base64 string for all visits
-    const visitsWithBase64Logo = visits.map(visit => (Object.assign(Object.assign({}, visit), { company_logo: visit.company_logo ? bufferToBase64(visit.company_logo) : null })));
-    res.status(200).json(visitsWithBase64Logo);
 }));

@@ -6,25 +6,21 @@ import multer from 'multer';
 import fs from 'fs';
 
 const prisma = new PrismaClient();
-const upload = multer({ storage: multer.memoryStorage() });
+
 
 // Helper function to close Prisma client
 const closePrismaClient = async () => {
   await prisma.$disconnect();
 };
 
-// Helper function to convert base64 to Buffer
-const base64ToBuffer = (base64: string): Buffer => {
-  const base64Data = base64.replace(/^data:image\/\w+;base64,/, '');
-  return Buffer.from(base64Data, 'base64');
-};
+
 
 // @desc    Add new Visit with details
 // @route   POST /api/visits
 // @access  Private
 export const addVisit = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   console.log('Request body:', req.body);
-  console.log('Uploaded file:', req.file);
+
 
   const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host } = req.body;
   const userId = req.user?.id;
@@ -42,18 +38,7 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
     return;
   }
 
-  let companyLogoBuffer: Buffer | null = null;
-  if (req.file) {
-    try {
-      const filePath = req.file.path;
-      companyLogoBuffer = fs.readFileSync(filePath);
-      fs.unlinkSync(filePath);  // Remove the temporary file
-    } catch (error) {
-      console.error('Error processing uploaded file:', error);
-      res.status(400).json({ message: 'Invalid image data' });
-      return;
-    }
-  }
+ 
 
   // Construct visitors array from the request body
   const visitors = [];
@@ -69,7 +54,7 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
       data: {
         company,
         company_info,
-        company_logo: companyLogoBuffer,
+      
         visitor_count,
         visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
         scheduled_arrival: scheduledArrivalDate,
@@ -114,18 +99,12 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
 export const updateVisit = asyncHandler(async (req: Request, res: Response): Promise<void> => {
   const visitId = req.params.id;
   console.log('Request body:', req.body);
-  console.log('Uploaded file:', req.file);
+
 
   const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host, existingVisitors, newVisitors, deletedVisitors } = req.body;
-  let company_logo = req.file ? req.file.path : null;
+  
 
-  if (req.file) {
-    const filePath = req.file.path;
-    const fileBuffer = fs.readFileSync(filePath);
-    company_logo = fileBuffer.toString('base64'); // Convert Buffer to base64 string
-  } else if (company_logo && company_logo.startsWith('data:image/')) {
-    company_logo = base64ToBuffer(company_logo).toString('base64');
-  }
+
 
   try {
     const existingVisit = await prisma.visit.findUnique({
@@ -146,9 +125,6 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
       host,
     };
 
-    if (company_logo) {
-      updatedData.company_logo = company_logo;
-    }
 
     // Overwrite existing visiting_departments if new ones are provided
     if (visiting_departments !== undefined) {
@@ -255,9 +231,7 @@ export const deleteVisit = asyncHandler(async (req: Request, res: Response) => {
 // @route   GET /api/visits
 // @access  Public
 // Convert buffer to base64
-const bufferToBase64 = (buffer: Buffer): string => {
-  return buffer.toString('base64');
-};
+
 
 export const getAllVisits = asyncHandler(async (req: Request, res: Response) => {
   const visits = await prisma.visit.findMany({
@@ -266,11 +240,8 @@ export const getAllVisits = asyncHandler(async (req: Request, res: Response) => 
     },
   });
 
-  // Convert buffer to base64 string for all visits
-  const visitsWithBase64Logo = visits.map(visit => ({
-    ...visit,
-    company_logo: visit.company_logo ? bufferToBase64(visit.company_logo) : null,
-  }));
+ 
 
-  res.status(200).json(visitsWithBase64Logo);
+
+
 });

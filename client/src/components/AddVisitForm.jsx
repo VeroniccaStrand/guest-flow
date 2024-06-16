@@ -1,7 +1,7 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { api } from '../services/api';
 import Notification from './Notification';
-import { UserContext } from '../contexts/UserContext';
+
 
 const AddVisitForm = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const AddVisitForm = () => {
   });
   const [visitors, setVisitors] = useState([{ name: '' }]);
   const [showNotification, setShowNotification] = useState(false);
-  const { userRole } = useContext(UserContext);
+
 
   const handleChange = (e) => {
     const { id, value, type, checked, name, files } = e.target;
@@ -142,18 +142,7 @@ const AddVisitForm = () => {
             onChange={handleChange}
           />
         </div>
-        <div>
-          <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_logo">
-            Company Logo
-          </label>
-          <input
-            className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
-            id="company_logo"
-            type="file"
-            onChange={handleChange}
-            disabled={userRole !== 'ADMIN'}
-          />
-        </div>
+
         <div>
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="visitor_count">
             Visitor Count
@@ -232,7 +221,7 @@ const AddVisitForm = () => {
               <button
                 type="button"
                 onClick={() => removeVisitor(index)}
-                className="ml-2 p-2 bg-red-500 text-white rounded"
+                className="ml-2 p-2 btn-ghost text-black rounded border-solid border-1 border-black"
               >
                 Remove
               </button>
@@ -241,9 +230,9 @@ const AddVisitForm = () => {
           <button
             type="button"
             onClick={addVisitor}
-            className="mt-2 p-2 bg-green-500 text-white rounded"
+            className="mt-2 p-2 btn-ghost border-solid border-1 border-black text-black rounded"
           >
-            Add Visitor
+            + Add Visitor
           </button>
         </div>
         <div className="col-span-1 md:col-span-2 flex justify-end">

@@ -11,7 +11,7 @@ const WelcomePage = () => {
     const filteredVisits = visits.filter(visit => {
       const scheduledArrival = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
       return scheduledArrival === today;
-     
+
     });
     console.log('visits updated')
     setTodaysVisits(filteredVisits);
@@ -29,7 +29,7 @@ const WelcomePage = () => {
   };
 
   return (
-    <div className="grid grid-cols-[1.5fr_3.5fr] h-screen bg-bg-image bg-center bg-cover p-10">
+    <div className="grid grid-cols-[1.5fr_3.5fr] h-screen bg-bg-image bg-center bg-cover p-10 ">
       <div className="flex items-start xl:p-10">
         <img src={nolato} alt="Company Logo" className="h-24 sm:h-36" />
       </div>
@@ -46,7 +46,7 @@ const WelcomePage = () => {
             <p>Nolato Polymer AB</p>
           </div>
         </header>
-        <div className='container grid  h-full  items-center'>
+        <div className='container flex flex-col justify-center items-center h-full'>
 
           <div className="grid grid-cols-auto-fill-sm 5xl:grid-cols-auto-fill-100 gap-8 min-h-[600px] mb-4 mt-10 mr-10 ml-10 relative">
             {todaysVisits.length > 0 ? (
@@ -60,7 +60,7 @@ const WelcomePage = () => {
                       <h2 className=' 2xl:text-3xl text-primary-text font-semibold '>{visit.company}</h2>
                       <p className='text-nyans-text text-ms mt-[-5px] '>{visit.company_info}</p>
                     </div>
-                    
+
 
                     <div className='text-nyans-text  font-bold mt-5 '>
                       <div className='  gap-2'>
@@ -72,9 +72,9 @@ const WelcomePage = () => {
                       </div>
 
                     </div>
-                    
+
                     <div >
-                    <p className='text-brand-red text-sm mb-10'>Your host today will be <span className='font-bold'>{visit.host}</span> </p>
+                      <p className='text-brand-red text-sm mb-10'>Your host today will be <span className='font-bold'>{visit.host}</span> </p>
                       <p className=' absolute bottom-0 right-0 p-4 text-black  font-extrabold '>   {visit.visiting_departments}</p>
 
                     </div>
