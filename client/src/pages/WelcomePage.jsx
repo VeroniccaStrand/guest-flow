@@ -40,16 +40,16 @@ const WelcomePage = () => {
             <p>Nolato Polymer AB</p>
           </div>
         </header>
-        <div className=" flex flex-col  items-center justify-center mt-10  h-screen">
+        <div className=" flex flex-col  items-center justify-center 3xl:mt-10  h-screen">
           {todaysVisits.length > 0 ? (
             <div
-              className={`${todaysVisits.length <= 3 ? 'flex flex-col gap-5 p-6 w-4/5 mt-20' : 'grid grid-cols-2 p-6 gap-4'} h-full`}
+              className={`${todaysVisits.length <= 3 ? 'flex flex-col gap-5 p-6 w-4/5 3xl:mt-20' : 'grid grid-cols-2 p-6 gap-4'} h-full`}
             >
               {todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
 
                 return (
-                  <div key={visit.id} className="shadow-lg rounded-3xl p-4  relative flex flex-col bg-black bg-opacity-10 justify-between">
+                  <div key={visit.id} className="shadow-lg rounded-3xl p-4  relative flex flex-col  bg-stone-100 bg-opacity-50 justify-between">
                     <div className="rounded-lg">
                       <h2 className=" text-lg 2xl:text-4xl text-primary-text font-semibold">{visit.company}</h2>
                       <p className="text-nyans-text text-ms mt-[-5px]">{visit.company_info}</p>
@@ -65,7 +65,7 @@ const WelcomePage = () => {
                       </div>
                     </div>
                     <div className='flex justify-between mt-4'>
-                      <p className="text-brand-red ">Your host today will be <span className="font-bold">{visit.host}</span></p>
+                      <p className="text-brand-red ">Your host today is <span className="font-bold">{visit.host}</span></p>
                       <p className="  text-black font-extrabold">{visit.visiting_departments}</p>
                     </div>
                   </div>

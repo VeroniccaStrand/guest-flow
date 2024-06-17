@@ -12,19 +12,21 @@ const AddVisitForm = () => {
     visiting_departments: [],
     scheduled_arrival: '',
     host: '',
+    includeFactoryTour: false,
   });
   const [visitors, setVisitors] = useState([{ name: '' }]);
   const [showNotification, setShowNotification] = useState(false);
 
 
   const handleChange = (e) => {
-    const { id, value, type, checked, name, files } = e.target;
+    const { id, value, type, checked, name } = e.target;
     if (type === 'checkbox' && name === 'visiting_departments') {
       setFormData((prevData) => {
         if (checked) {
           return {
             ...prevData,
-            visiting_departments: [...prevData.visiting_departments, value]
+            visiting_departments: [...prevData.visiting_departments, value],
+
           };
         } else {
           return {
@@ -35,11 +37,7 @@ const AddVisitForm = () => {
           };
         }
       });
-    } else if (type === 'file') {
-      setFormData((prevData) => ({
-        ...prevData,
-        company_logo: files[0],
-      }));
+
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -81,7 +79,7 @@ const AddVisitForm = () => {
     visitors.forEach((visitor, index) => {
       submissionData.append(`visitors[${index}].name`, visitor.name);
     });
-
+    console.log(submissionData)
     try {
       const response = await api.post('/visits', submissionData, {
         headers: {
@@ -98,7 +96,8 @@ const AddVisitForm = () => {
           visitor_count: '',
           visiting_departments: [],
           scheduled_arrival: '',
-          host: ''
+          host: '',
+          includeFactoryTour: false
         });
         setVisitors([{ name: '' }]);
 
@@ -158,10 +157,11 @@ const AddVisitForm = () => {
         </div>
         <div className="col-span-1 md:col-span-2">
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
-            Visiting Departments
+            Hosting Company
           </label>
+          <p className='text-sm text-brand-red'>All scheduled visits will be displayed at the entrance on the date of the visit.</p>
           <div className="flex flex-wrap">
-            {['Polymer', 'MediTor', 'Nolato AB'].map((department) => (
+            {['Nolato Polymer AB', 'Nolato MediTor AB', 'Nolato AB'].map((department) => (
               <label key={department} className="mr-4">
                 <input
                   className="mr-2 leading-tight"
@@ -176,7 +176,22 @@ const AddVisitForm = () => {
             ))}
           </div>
         </div>
+        <div className="col-span-1 md:col-span-2">
+          <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
+            Include Factory Tour
+          </label>
+          <p className='text-sm text-brand-red'>Visits that include a tour will be displayed on all monitors.</p>
+          <input
+            className="mr-2 leading-tight"
+            type="checkbox"
+            id="includeFactoryTour"
+            checked={formData.includeFactoryTour}
+            onChange={handleChange}
+          />
+          <span className="text-primary-text">Include a tour of the factory</span>
+        </div>
         <div>
+
           <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="scheduled_arrival">
             Scheduled Arrival
           </label>
