@@ -238,9 +238,10 @@ export const getAllVisits = asyncHandler(async (req: Request, res: Response) => 
     include: {
       visitors: true, // Include related visitors
     },
+    
   });
 
- 
+ res.status(200).json(visits)
 
 
 

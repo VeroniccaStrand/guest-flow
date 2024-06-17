@@ -208,4 +208,5 @@ exports.getAllVisits = (0, express_async_handler_1.default)((req, res) => __awai
             visitors: true, // Include related visitors
         },
     });
+    res.status(200).json(visits);
 }));
