@@ -75,7 +75,11 @@ const WelcomePage = () => {
           ) : (
             <div className="flex flex-col items-center justify-center text-center rounded-lg p-6 w-full bg-white bg-opacity-70">
               <div className="text-xl sm:text-2xl text-primary-text font-semibold mb-2">
-                No visits today
+              We are a Swedish, publicly listed group with a well-established global position on three continents: Europe, Asia, and North America. We develop and manufacture products in polymer
+
+materials such as plastic, silicone and thermoplastic elastomers (TPE) for leading customers. Our offering spans the entire value chain - from solutions-oriented development focused on
+
+sustainability to product delivery
               </div>
             </div>
           )}
