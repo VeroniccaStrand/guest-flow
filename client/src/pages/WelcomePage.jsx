@@ -24,11 +24,11 @@ const WelcomePage = () => {
 
   return (
     <div className="grid grid-cols-[2fr_3fr] h-screen bg-bg-image bg-center bg-cover p-10">
-      <div className="flex items-start xl:p-10">
-        <img src={nolato} alt="Company Logo" className="h-24 sm:h-36" />
+      <div className="flex items-start ">
+        <img src={nolato} alt="Company Logo" className="h-24 sm:h-28" />
       </div>
       <div className="flex flex-col overflow-hidden">
-        <header className="mb-6 flex flex-col m-10 self-end">
+        <header className="mb-6 flex flex-col mr-10 self-end">
           <h1 className="text-7xl 3xl:text-8xl text-primary-text font-bold text-shadow-lg">
             Welcome to Torekov
           </h1>
@@ -43,13 +43,13 @@ const WelcomePage = () => {
         <div className=" flex flex-col  items-center justify-center mt-10  h-screen">
           {todaysVisits.length > 0 ? (
             <div
-              className={`${todaysVisits.length <= 3 ? 'flex flex-col gap-5 w-4/5' : 'grid grid-cols-2 gap-4'} h-full`}
+              className={`${todaysVisits.length <= 3 ? 'flex flex-col gap-5 p-6 w-4/5 mt-20' : 'grid grid-cols-2 p-6 gap-4'} h-full`}
             >
               {todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
 
                 return (
-                  <div key={visit.id} className="shadow-lg rounded p-4  relative flex flex-col bg-black bg-opacity-10 justify-between">
+                  <div key={visit.id} className="shadow-lg rounded-3xl p-4  relative flex flex-col bg-black bg-opacity-10 justify-between">
                     <div className="rounded-lg">
                       <h2 className=" text-lg 2xl:text-4xl text-primary-text font-semibold">{visit.company}</h2>
                       <p className="text-nyans-text text-ms mt-[-5px]">{visit.company_info}</p>
@@ -73,13 +73,13 @@ const WelcomePage = () => {
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center text-center rounded-lg p-6 w-full bg-white bg-opacity-70">
-              <div className="text-xl sm:text-2xl text-primary-text font-semibold mb-2">
-              We are a Swedish, publicly listed group with a well-established global position on three continents: Europe, Asia, and North America. We develop and manufacture products in polymer
+            <div className="flex flex-col  items-center justify-center text-center  p-10 w-3/4">
+              <div className=" tracking-wide leading-10 text-2xl  font-medium   text-nyans-text">
+                <p className='flex flex-col'> We are a Swedish, publicly listed group with a well-established global position on three continents:<br /> <span className='font-bold'>Europe, Asia, and North America. </span><br />We develop and manufacture products in polymer
 
-materials such as plastic, silicone and thermoplastic elastomers (TPE) for leading customers. Our offering spans the entire value chain - from solutions-oriented development focused on
+                  materials such as plastic, silicone and thermoplastic elastomers (TPE) for leading customers. Our offering spans the entire value chain - from solutions-oriented development focused on
 
-sustainability to product delivery
+                  sustainability to product delivery</p>
               </div>
             </div>
           )}
