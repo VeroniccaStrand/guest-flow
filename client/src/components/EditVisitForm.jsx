@@ -10,10 +10,8 @@ const EditVisitForm = () => {
   const { visits } = useContext(VisitContext);
   const [formData, setFormData] = useState({
     company: '',
-    company_info: '',
-    company_logo: null,
-    visitor_count: '',
-    visiting_departments: [],
+    factoryTour: false,
+    hosting_company: '',
     scheduled_arrival: '',
     host: ''
   });
@@ -24,15 +22,13 @@ const EditVisitForm = () => {
   useEffect(() => {
     const visit = visits.find((visit) => visit.id === id);
     if (visit) {
-      const formattedDateTime = new Date(visit.scheduled_arrival).toISOString().slice(0, 16);
+      const formattedDate = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
       setFormData({
         company: visit.company,
-        company_info: visit.company_info || '',
-        company_logo: visit.company_logo || '',
-        visitor_count: visit.visitor_count || '',
-        visiting_departments: visit.visiting_departments ? visit.visiting_departments.split(', ') : [],
-        scheduled_arrival: formattedDateTime,
-        host: visit.host || ''
+        factoryTour: visit.factoryTour,
+        hosting_company: visit.hosting_company,
+        scheduled_arrival: formattedDate,
+        host: visit.host
       });
       setVisitors(visit.visitors && visit.visitors.length > 0 ? visit.visitors.map(visitor => ({ id: visitor.id, name: visitor.name })) : [{ id: '', name: '' }]);
     }
@@ -40,26 +36,15 @@ const EditVisitForm = () => {
 
   const handleChange = (e) => {
     const { id, value, type, checked, name, files } = e.target;
-    if (type === 'checkbox' && name === 'visiting_departments') {
-      setFormData((prevData) => {
-        if (checked) {
-          return {
-            ...prevData,
-            visiting_departments: [...prevData.visiting_departments, value]
-          };
-        } else {
-          return {
-            ...prevData,
-            visiting_departments: prevData.visiting_departments.filter(
-              (department) => department !== value
-            )
-          };
-        }
-      });
+    if (type === 'checkbox') {
+      setFormData((prevData) => ({
+        ...prevData,
+        [id || name]: checked,
+      }));
     } else if (type === 'file') {
       setFormData((prevData) => ({
         ...prevData,
-        company_logo: files[0],  // Set the file directly in formData
+        company_logo: files[0],
       }));
     } else {
       setFormData((prevData) => ({
@@ -90,7 +75,7 @@ const EditVisitForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const today = new Date().toISOString().split('T')[0];
-    const isActive = formData.scheduled_arrival.split('T')[0] === today;
+    const isActive = formData.scheduled_arrival === today;
 
     const submissionData = new FormData();
     for (const key in formData) {
@@ -155,63 +140,17 @@ const EditVisitForm = () => {
             />
           </div>
           <div>
-            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_info">
-              Company Info
+            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="factoryTour">
+              Factory Tour
             </label>
             <input
-              className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
-              id="company_info"
-              type="text"
-              placeholder="Company Info"
-              value={formData.company_info}
-              onChange={handleChange}
-
-            />
-          </div>
-          <div>
-            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="company_logo">
-              Company Logo
-            </label>
-            <input
-              className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
-              id="company_logo"
-              type="file"
+              className="mr-2 leading-tight"
+              id="factoryTour"
+              name="factoryTour"
+              type="checkbox"
+              checked={formData.factoryTour}
               onChange={handleChange}
             />
-          </div>
-          <div>
-            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="visitor_count">
-              Visitor Count
-            </label>
-            <input
-              className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
-              id="visitor_count"
-              type="text"
-              placeholder="Number of Visitors"
-              value={formData.visitor_count}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="col-span-2">
-            <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2">
-              Visiting Departments
-            </label>
-            <div className="flex flex-wrap">
-              {['Polymer', 'Meditor', 'Nolato AB'].map((department) => (
-                <label key={department} className="mr-4">
-                  <input
-                    className="mr-2 leading-tight"
-                    type="checkbox"
-                    name="visiting_departments"
-                    value={department}
-                    checked={formData.visiting_departments.includes(department)}
-                    onChange={handleChange}
-                  />
-                  <span className="text-primary-text">{department}</span>
-                </label>
-              ))}
-            </div>
           </div>
           <div>
             <label className="block uppercase tracking-wide text-primary-text text-xs font-bold mb-2" htmlFor="scheduled_arrival">
@@ -220,7 +159,7 @@ const EditVisitForm = () => {
             <input
               className="appearance-none block w-full bg-custom-bg text-primary-text border border-secondary-bg rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-brand-red placeholder-primary-text"
               id="scheduled_arrival"
-              type="datetime-local"
+              type="date"
               value={formData.scheduled_arrival}
               onChange={handleChange}
               required
@@ -285,7 +224,7 @@ const EditVisitForm = () => {
         </div>
         <div className="col-span-1 md:col-span-1 flex items-start justify-end">
           <button
-            className=" focus:shadow-outline focus:outline-none  underline py-2 px-4 rounded"
+            className="focus:shadow-outline focus:outline-none underline py-2 px-4 rounded"
             onClick={handleDelete}
           >
             Delete Visit

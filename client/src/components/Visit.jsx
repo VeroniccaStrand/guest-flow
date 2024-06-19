@@ -8,13 +8,13 @@ const Visit = ({ visit }) => {
     <tr className="hover:bg-gray-100">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-text">
         {visit.company}
-        <div className="text-sm text-secondary-text">{visit.company_info}</div>
+
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-primary-text">
-        {visit.visitor_count}
+        {visit.factoryTour ? 'Yes' : 'No'}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-text">
-        {visit.visiting_departments}
+        {visit.hosting_company}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-primary-text">
         {formatDate(visit.scheduled_arrival)}
@@ -35,10 +35,10 @@ Visit.propTypes = {
   visit: PropTypes.shape({
     id: PropTypes.string.isRequired,
     company: PropTypes.string.isRequired,
-    company_info: PropTypes.string,
-    visiting_departments: PropTypes.string,
-    visitor_count: PropTypes.string.isRequired,
+    factoryTour: PropTypes.bool,
+    hosting_company: PropTypes.string,
     scheduled_arrival: PropTypes.string.isRequired,
+    isActive: PropTypes.bool,
   }).isRequired,
 };
 

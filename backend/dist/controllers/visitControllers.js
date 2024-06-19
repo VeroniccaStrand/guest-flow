@@ -27,7 +27,7 @@ const closePrismaClient = () => __awaiter(void 0, void 0, void 0, function* () {
 exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     console.log('Request body:', req.body);
-    const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host } = req.body;
+    const { company, hosting_company, scheduled_arrival, host, factoryTour } = req.body;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
     if (!userId) {
         console.error('User ID is missing');
@@ -35,6 +35,7 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
         return;
     }
     const scheduledArrivalDate = new Date(scheduled_arrival);
+    scheduledArrivalDate.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
     if (isNaN(scheduledArrivalDate.getTime())) {
         console.error('Invalid date format for scheduled_arrival');
         res.status(400).json({ message: 'Invalid date format for scheduled_arrival' });
@@ -52,12 +53,11 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
         const newVisit = yield prisma.visit.create({
             data: {
                 company,
-                company_info,
-                visitor_count,
-                visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
+                hosting_company,
                 scheduled_arrival: scheduledArrivalDate,
                 isActive: scheduledArrivalDate.toISOString().split('T')[0] === new Date().toISOString().split('T')[0],
                 host,
+                factoryTour: Boolean(factoryTour),
                 createdById: userId,
             },
         });
@@ -93,7 +93,7 @@ exports.addVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(
 exports.updateVisit = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const visitId = req.params.id;
     console.log('Request body:', req.body);
-    const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host, existingVisitors, newVisitors, deletedVisitors } = req.body;
+    const { company, factoryTour, hosting_company, scheduled_arrival, host, existingVisitors, newVisitors, deletedVisitors } = req.body;
     try {
         const existingVisit = yield prisma.visit.findUnique({
             where: { id: visitId },
@@ -103,25 +103,20 @@ exports.updateVisit = (0, express_async_handler_1.default)((req, res) => __await
             res.status(404).json({ message: "Visit not found" });
             return;
         }
+        const today = new Date().toISOString().split('T')[0];
+        const isActive = scheduled_arrival === today;
         const updatedData = {
             company,
-            company_info,
-            visitor_count,
+            factoryTour: factoryTour === 'true' || factoryTour === true, // Handle boolean and string values
+            hosting_company,
             scheduled_arrival: new Date(scheduled_arrival),
             host,
+            isActive,
         };
-        // Overwrite existing visiting_departments if new ones are provided
-        if (visiting_departments !== undefined) {
-            updatedData.visiting_departments = visiting_departments;
-            yield prisma.visit.update({
-                where: { id: visitId },
-                data: { visiting_departments: '' },
-            });
-        }
         // Update the visit with new data
         const updatedVisit = yield prisma.visit.update({
             where: { id: visitId },
-            data: Object.assign(Object.assign({}, updatedData), { visiting_departments: visiting_departments !== undefined ? Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments : existingVisit.visiting_departments }),
+            data: updatedData,
         });
         // Handle visitor deletions
         if (deletedVisitors) {
@@ -203,6 +198,7 @@ exports.deleteVisit = (0, express_async_handler_1.default)((req, res) => __await
 // @access  Public
 // Convert buffer to base64
 exports.getAllVisits = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('fetch backend');
     const visits = yield prisma.visit.findMany({
         include: {
             visitors: true, // Include related visitors

@@ -6,13 +6,17 @@ import cookieParser from 'cookie-parser';
 import userRoutes from './routes/userRoutes';
 import visitRoutes from './routes/visitRoutes';
 import errorHandler from './middleware/errorMiddleware';
-
+import { verifyToken } from './middleware/verifyToken';
 const app = express();
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser());
+
+app.get('/api/check-auth', verifyToken, (req, res) => {
+  res.status(200).json({ message: 'Authenticated' });
+});
 
 // API Routes
 app.use('/api/users', userRoutes);

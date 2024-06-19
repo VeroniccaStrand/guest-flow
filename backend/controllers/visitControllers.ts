@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import asyncHandler from 'express-async-handler';
 import { PrismaClient } from '@prisma/client';
 import { io } from '../server';
-import multer from 'multer';
-import fs from 'fs';
+
 
 const prisma = new PrismaClient();
 
@@ -22,7 +21,7 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
   console.log('Request body:', req.body);
 
 
-  const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host } = req.body;
+  const { company,  hosting_company, scheduled_arrival, host, factoryTour } = req.body;
   const userId = req.user?.id;
 
   if (!userId) {
@@ -31,7 +30,9 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
     return;
   }
 
-  const scheduledArrivalDate = new Date(scheduled_arrival);
+    const scheduledArrivalDate = new Date(scheduled_arrival);
+  scheduledArrivalDate.setUTCHours(0, 0, 0, 0); // Ensure time is set to midnight UTC
+
   if (isNaN(scheduledArrivalDate.getTime())) {
     console.error('Invalid date format for scheduled_arrival');
     res.status(400).json({ message: 'Invalid date format for scheduled_arrival' });
@@ -53,14 +54,16 @@ export const addVisit = asyncHandler(async (req: Request, res: Response): Promis
     const newVisit = await prisma.visit.create({
       data: {
         company,
-        company_info,
-      
-        visitor_count,
-        visiting_departments: Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments,
+        hosting_company,
         scheduled_arrival: scheduledArrivalDate,
         isActive: scheduledArrivalDate.toISOString().split('T')[0] === new Date().toISOString().split('T')[0],
         host,
+        factoryTour: Boolean(factoryTour),
         createdById: userId,
+
+        
+      
+        
       },
     });
 
@@ -100,11 +103,16 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
   const visitId = req.params.id;
   console.log('Request body:', req.body);
 
-
-  const { company, company_info, visitor_count, visiting_departments, scheduled_arrival, host, existingVisitors, newVisitors, deletedVisitors } = req.body;
-  
-
-
+  const { 
+    company, 
+    factoryTour, 
+    hosting_company, 
+    scheduled_arrival, 
+    host, 
+    existingVisitors, 
+    newVisitors, 
+    deletedVisitors 
+  } = req.body;
 
   try {
     const existingVisit = await prisma.visit.findUnique({
@@ -116,32 +124,22 @@ export const updateVisit = asyncHandler(async (req: Request, res: Response): Pro
       res.status(404).json({ message: "Visit not found" });
       return;
     }
+   const today = new Date().toISOString().split('T')[0];
+    const isActive = scheduled_arrival === today;
 
     const updatedData: Record<string, any> = {
       company,
-      company_info,
-      visitor_count,
+      factoryTour: factoryTour === 'true' || factoryTour === true, // Handle boolean and string values
+      hosting_company,
       scheduled_arrival: new Date(scheduled_arrival),
       host,
+      isActive,
     };
-
-
-    // Overwrite existing visiting_departments if new ones are provided
-    if (visiting_departments !== undefined) {
-      updatedData.visiting_departments = visiting_departments;
-      await prisma.visit.update({
-        where: { id: visitId },
-        data: { visiting_departments: '' },
-      });
-    }
 
     // Update the visit with new data
     const updatedVisit = await prisma.visit.update({
       where: { id: visitId },
-      data: {
-        ...updatedData,
-        visiting_departments: visiting_departments !== undefined ? Array.isArray(visiting_departments) ? visiting_departments.join(', ') : visiting_departments : existingVisit.visiting_departments,
-      },
+      data: updatedData,
     });
 
     // Handle visitor deletions
@@ -234,6 +232,7 @@ export const deleteVisit = asyncHandler(async (req: Request, res: Response) => {
 
 
 export const getAllVisits = asyncHandler(async (req: Request, res: Response) => {
+  console.log('fetch backend')
   const visits = await prisma.visit.findMany({
     include: {
       visitors: true, // Include related visitors

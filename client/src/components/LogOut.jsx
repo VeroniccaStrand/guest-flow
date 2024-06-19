@@ -10,7 +10,7 @@ const LogOut = () => {
   };
 
   return (
-    <button className='uppercase text-gray-500' onClick={handleLogout}>Log out</button>
+    <button className='uppercase btn btn-ghost bg-red-50 text-gray-500' onClick={handleLogout}>Log out</button>
   );
 };
 

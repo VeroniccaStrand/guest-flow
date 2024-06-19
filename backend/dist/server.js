@@ -12,11 +12,15 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const visitRoutes_1 = __importDefault(require("./routes/visitRoutes"));
 const errorMiddleware_1 = __importDefault(require("./middleware/errorMiddleware"));
+const verifyToken_1 = require("./middleware/verifyToken");
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.json({ limit: '50mb' }));
 app.use(express_1.default.urlencoded({ limit: '50mb', extended: true }));
 app.use((0, cookie_parser_1.default)());
+app.get('/api/check-auth', verifyToken_1.verifyToken, (req, res) => {
+    res.status(200).json({ message: 'Authenticated' });
+});
 // API Routes
 app.use('/api/users', userRoutes_1.default);
 app.use('/api/visits', visitRoutes_1.default);

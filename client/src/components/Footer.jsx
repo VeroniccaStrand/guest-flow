@@ -16,12 +16,11 @@ const Footer = () => {
   };
 
   return (
-    <footer className="footer footer-center p-10 bg-nyans-text text-base-content">
-      <nav className="grid grid-flow-col gap-4">
-        <a className="link link-hover" onClick={() => handleOpenModal("About us content here...")}>About us</a>
+    <footer className="footer footer-center p-10  text-nyans-text">
+      <nav className="grid grid-flow-col text-lg gap-4">
+        <a className="link link-hover " onClick={() => handleOpenModal("StrandDev Web Solutions proudly presents the Visitor Manager, an innovative solution designed specifically for Nolato. Developed during my LIA (Learning in Action) internship, this tool streamlines visitor management, enhancing efficiency. With a user-friendly interface and robust features, the Visitor Manager exemplifies our commitment to delivering high-quality, customized web solutions that meet the unique needs of our clients. ")}>About us</a>
         <a className="link link-hover" href="mailto:veronicca.strand@gmail.com">Contact</a>
-        <a className="link link-hover" onClick={() => handleOpenModal("Jobs content here...")}>Jobs</a>
-        <a className="link link-hover" onClick={() => handleOpenModal("Press kit content here...")}>Press kit</a>
+
       </nav>
       <nav>
         <div className="grid grid-flow-col gap-4">

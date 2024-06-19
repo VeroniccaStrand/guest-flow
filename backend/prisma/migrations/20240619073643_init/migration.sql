@@ -17,20 +17,28 @@ CREATE TABLE [dbo].[User] (
 CREATE TABLE [dbo].[Visit] (
     [id] NVARCHAR(1000) NOT NULL,
     [company] NVARCHAR(1000) NOT NULL,
-    [company_info] NVARCHAR(1000),
-    [company_logo] NVARCHAR(1000),
-    [visitor_count] NVARCHAR(1000),
-    [visiting_departments] NVARCHAR(1000),
+    [hosting_company] NVARCHAR(1000),
     [scheduled_arrival] DATETIME2 NOT NULL,
     [isActive] BIT,
-    [welcome_message] NVARCHAR(1000),
+    [factoryTour] BIT,
     [host] NVARCHAR(1000),
     [createdById] NVARCHAR(1000) NOT NULL,
     CONSTRAINT [Visit_pkey] PRIMARY KEY CLUSTERED ([id])
 );
 
+-- CreateTable
+CREATE TABLE [dbo].[Visitor] (
+    [id] NVARCHAR(1000) NOT NULL,
+    [name] NVARCHAR(1000) NOT NULL,
+    [visitId] NVARCHAR(1000) NOT NULL,
+    CONSTRAINT [Visitor_pkey] PRIMARY KEY CLUSTERED ([id])
+);
+
 -- AddForeignKey
 ALTER TABLE [dbo].[Visit] ADD CONSTRAINT [Visit_createdById_fkey] FOREIGN KEY ([createdById]) REFERENCES [dbo].[User]([id]) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[Visitor] ADD CONSTRAINT [Visitor_visitId_fkey] FOREIGN KEY ([visitId]) REFERENCES [dbo].[Visit]([id]) ON DELETE CASCADE ON UPDATE CASCADE;
 
 COMMIT TRAN;
 

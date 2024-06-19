@@ -17,13 +17,13 @@ const VisitList = ({ visits }) => {
               Company
             </th>
             <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
-              Number of Visitors
+              Factory Tour
             </th>
             <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
-              Visiting Department
+              Hosting Company
             </th>
             <th className="px-6 py-3 text-left text-xs font-bold text-primary-text uppercase tracking-wider">
-              Scheduled Arrival
+              Day of the visit
             </th>
             <th className="px-6 py-3 text-primary-text tracking-wider">
               <svg
@@ -56,8 +56,8 @@ VisitList.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       company: PropTypes.string.isRequired,
-      visitor_count: PropTypes.string.isRequired,
-      visiting_departments: PropTypes.string,
+      factory_tour: PropTypes.bool,
+      hosting_company: PropTypes.string,
       scheduled_arrival: PropTypes.string.isRequired,
       isActive: PropTypes.bool,
     })

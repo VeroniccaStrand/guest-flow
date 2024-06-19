@@ -206,7 +206,7 @@ const generateToken = (res: Response, id: string, role: string) => {
   // Set the token as a cookie in the response
   res.cookie('jwt', token, {
     httpOnly: false,
-     // Use secure cookies in production
+    secure: process.env.NODE_ENV === 'production',
     
   });
 

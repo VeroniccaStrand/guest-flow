@@ -7,15 +7,16 @@ const AddUserForm = () => {
     username: '',
     fullname: '',
     password: '',
+    role: '', // Changed to handle the role as a string
   });
   const [showNotification, setShowNotification] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
-    const { id, value } = e.target;
+    const { id, value, type, checked } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [id]: value,
+      [id]: type === 'checkbox' ? (checked ? 'ADMIN' : '') : value, // Handle checkbox as a string value
     }));
     setErrorMessage(''); // Clear error message on input change
   };
@@ -31,6 +32,7 @@ const AddUserForm = () => {
           username: '',
           fullname: '',
           password: '',
+          role: '',
         });
       }
     } catch (error) {
@@ -88,6 +90,18 @@ const AddUserForm = () => {
             onChange={handleChange}
             required
           />
+        </div>
+        <div className="flex items-center">
+          <input
+            className="mr-2 leading-tight"
+            id="role"
+            type="checkbox"
+            checked={formData.role === 'ADMIN'}
+            onChange={handleChange}
+          />
+          <label className="block uppercase tracking-wide text-primary-text text-xs font-bold" htmlFor="role">
+            Admin
+          </label>
         </div>
         <div className="col-span-1 md:col-span-2 flex justify-end">
           <button

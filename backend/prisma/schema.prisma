@@ -23,20 +23,16 @@ model User {
 }
 
 model Visit {
-  id                   String   @id @default(uuid())
-  company              String
-  company_info         String?
-  company_logo         Bytes?
-  visitor_count        String?
-  visiting_departments String?
-  scheduled_arrival    DateTime
-  isActive             Boolean?
-
-  host        String?
-  createdBy   User    @relation(fields: [createdById], references: [id])
-  createdById String
-
-  visitors Visitor[] @relation("VisitToVisitors")
+  id                String    @id @default(uuid())
+  company           String
+  hosting_company   String?
+  scheduled_arrival DateTime
+  isActive          Boolean?
+  factoryTour       Boolean?
+  host              String?
+  createdBy         User      @relation(fields: [createdById], references: [id])
+  createdById       String
+  visitors          Visitor[] @relation("VisitToVisitors")
 }
 
 model Visitor {
