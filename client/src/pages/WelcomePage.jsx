@@ -29,7 +29,7 @@ const WelcomePage = () => {
       </div>
       <div className="flex flex-col overflow-hidden">
         <header className="mb-6 flex flex-col mr-10 self-end">
-          <h1 className="text-7xl 3xl:text-8xl text-primary-text font-bold text-shadow-lg">
+          <h1 className="text-7xl 2xl:text-8xl text-primary-text font-bold text-shadow-lg">
             Welcome to Torekov
           </h1>
           <div className="flex space-x-4 text-lg sm:text-2xl items-center justify-end text-nyans-text font-light mt-[-10px]">
@@ -43,13 +43,13 @@ const WelcomePage = () => {
         <div className=" flex flex-col  items-center justify-center 3xl:mt-10  h-screen">
           {todaysVisits.length > 0 ? (
             <div
-              className={`${todaysVisits.length <= 3 ? 'flex flex-col gap-5 p-6 w-4/5 3xl:mt-20' : 'grid grid-cols-2 p-6 gap-4'} h-full`}
+              className={`${todaysVisits.length <= 3 ? 'flex flex-col gap-5 p-6 w-4/5 xl:mt-20' : 'grid grid-cols-2 p-6 gap-4'} h-full`}
             >
               {todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
 
                 return (
-                  <div key={visit.id} className="shadow-lg rounded-3xl p-4  relative flex flex-col  bg-stone-100 bg-opacity-50 justify-between">
+                  <div key={visit.id} className="shadow-lg rounded-3xl p-4  relative flex flex-col  bg-zinc-200 bg-opacity-50 justify-between">
                     <div className="rounded-lg">
                       <h2 className=" text-lg 2xl:text-4xl text-primary-text font-semibold">{visit.company}</h2>
                       <p className="text-nyans-text text-ms mt-[-5px]">{visit.company_info}</p>
@@ -57,8 +57,8 @@ const WelcomePage = () => {
                     <div className="text-nyans-text flex justify-center font-bold mt-2">
                       <div className="gap-1 4xl:gap-4 flex justify-center    w-10/12 flex-wrap">
                         {visitorNames.map((name, index) => (
-                          <div key={index} className="flex items-center ">
-                            <p className={`text-shadow mx-4 mb-2 text-lg 2xl:text-[1.5rem]`}>{name}</p>
+                          <div key={index} className="flex items-center  ">
+                            <p className={`text-shadow mx-4 mb-2 text-lg mt-4 xl:text-[1.8rem]`}>{name}</p>
 
                           </div>
                         ))}
