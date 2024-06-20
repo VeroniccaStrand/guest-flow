@@ -33,6 +33,10 @@ export const VisitProvider = ({ children }) => {
       console.log('Socket connected visit');
     });
 
+    socket.on('connect_error', (error) => {
+      console.error('socket connection error', error)
+    })
+
     socket.on('newVisit', (newVisit) => {
       console.log('New visit received:', newVisit);
       setVisit((prevVisits) => [...prevVisits, newVisit]);

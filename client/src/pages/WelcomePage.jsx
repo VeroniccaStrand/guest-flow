@@ -52,7 +52,7 @@ const WelcomePage = () => {
                   <div key={visit.id} className="shadow-lg rounded-3xl p-4  relative flex flex-col  bg-zinc-200 bg-opacity-50 justify-between">
                     <div className="rounded-lg">
                       <h2 className=" text-lg 2xl:text-4xl text-primary-text font-semibold">{visit.company}</h2>
-                      <p className="text-nyans-text text-ms mt-[-5px]">{visit.company_info}</p>
+                  
                     </div>
                     <div className="text-nyans-text flex justify-center font-bold mt-2">
                       <div className="gap-1 4xl:gap-4 flex justify-center    w-10/12 flex-wrap">
@@ -66,13 +66,14 @@ const WelcomePage = () => {
                     </div>
                     <div className='flex justify-between mt-4'>
                       <p className="text-brand-red ">Your host today is <span className="font-bold">{visit.host}</span></p>
-                      <p className="  text-black font-extrabold">{visit.visiting_departments}</p>
+                      <p className="  text-black font-extrabold">{visit.hosting_company}</p>
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
+            !isLoading && (
             <div className="flex flex-col  items-center justify-center text-center  p-10 w-3/4">
               <div className=" tracking-wide leading-10 text-2xl  font-medium   text-nyans-text">
                 <p className='flex flex-col'> We are a Swedish, publicly listed group with a well-established global position on three continents:<br /> <span className='font-bold'>Europe, Asia, and North America. </span><br />We develop and manufacture products in polymer
@@ -82,6 +83,7 @@ const WelcomePage = () => {
                   sustainability to product delivery</p>
               </div>
             </div>
+            )
           )}
         </div>
       </div>
