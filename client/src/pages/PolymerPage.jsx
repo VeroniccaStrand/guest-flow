@@ -10,10 +10,12 @@ const WelcomePage = () => {
   useEffect(() => {
     const filteredVisits = visits.filter(visit => {
       const scheduledArrival = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
-      return scheduledArrival === today;
-
+      return (
+        scheduledArrival === today &&
+        (visit.factoryTour === true || visit.hosting_company === 'Nolato Polymer AB')
+      );
     });
-    console.log('visits updated')
+    console.log('visits updated');
     setTodaysVisits(filteredVisits);
   }, [visits, today]);
 
@@ -24,9 +26,9 @@ const WelcomePage = () => {
 
 
   return (
-    <div className="grid grid-cols-[1fr_1.2fr] h-screen bg-bg-image bg-center bg-cover  ">
+    <div className="grid grid-cols-[1fr_1.1fr] h-screen bg-bg-image bg-center bg-cover  ">
       <div className="flex items-start p-10">
-        <img src={nolato} alt="Company Logo" className="h-24" />
+        <img src={nolato} alt="Company Logo" className="h-28" />
       </div>
       <div className="flex flex-col p-10 ">
         <header className="mr-4 ">
@@ -43,29 +45,29 @@ const WelcomePage = () => {
         </header>
         <div className='container grid  h-full  items-center'>
 
-          <div className="container  h-full flex flex-col desktop:p-5 tv:py-10  justify-center gap-6">
+          <div className="container  h-full flex flex-col desktop:p-5 tv:py-20  justify-center gap-6">
             {todaysVisits.length > 0 ? (
               todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
 
                 return (
 
-                  <div key={visit.id} className='flex flex-col shadow-xl  rounded-xl laptop:p-4 desktop:p-6 tv: flex-grow max-h-[25rem] bg-gray-gradient bg-opacity-60 justify-between'>
-                    <h2 className=' laptop:text-2xl desktop:text-3xl tv:text-5xl text-primary-text font-semibold '>{visit.company}</h2>
+                  <div key={visit.id} className='flex flex-col shadow-md  rounded-xl laptop:p-4 desktop:p-6 tv: flex-grow max-h-[25rem] bg-gray-gradient   justify-between'>
+                    <h2 className=' laptop:text-2xl desktop:text-3xl tv:text-5xl rounded bg-opacity-25      text-[#444] '>{visit.company}</h2>
 
                     <div className='text-nyans-text flex  font-medium justify-center  laptop:text-2xl desktop:text-3xl tv:text-4xl '>
-                      <div className='flex gap-8 flex-wrap justify-center '>
+                      <div className='flex-col flex gap-2 text-center justify-center '>
                         {visitorNames.map((name, index) => (
 
-                          <p key={index} className={`text-shadow  capitalize `}>{name}</p>
+                          <p key={index} className={`text-shadow-md  font-bold  capitalize `}>{name}</p>
 
                         ))}
                       </div>
                     </div>
 
                     <div className='flex justify-between items-end' >
-                      <p className='text-brand-red desktop:text-xl tv:text-xl  '>Your host today is <br /><span className='font-bold'>{visit.host}</span> </p>
-                      <p className='text-black  desktop:text-xl tv:text-xl  '>   {visit.hosting_company}</p>
+                      <p className='text-nyans-text desktop:text-xl tv:text-2xl  '>Your host today is <br /><span className='font-bold text-brand-red'>{visit.host}</span> </p>
+                      <p className='text-black  desktop:text-xl tv:text-2xl font-light '>   {visit.hosting_company}</p>
                     </div>
 
                   </div>

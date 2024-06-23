@@ -17,7 +17,7 @@ const config = {
       backgroundImage: {
         'bg-image': "url('assets/Welcome_toNolato_2024-1080p.png')",
         'gray-gradient':
-          'linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(249, 249, 244, 0.4), #f3f3ed, #ededeb, #e7e7e4, #e1e1dd, #dbdbd6, #d5d5cf)',
+          'linear-gradient(135deg, rgba(217, 219, 212, 0.2), rgba(235, 235, 232, 0.2), rgba(240, 240, 239) 25%, rgba(250, 250, 250) 50%, rgba(240, 240, 239) 75%, rgba(235, 235, 232, 0.8), rgba(217, 219, 212, 0.2));',
       },
       gridTemplateColumns: {
         'auto-fill-sm': 'repeat(auto-fill, minmax(300px, 1fr))',
