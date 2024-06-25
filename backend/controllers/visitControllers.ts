@@ -228,7 +228,7 @@ export const deleteVisit = asyncHandler(async (req: Request, res: Response) => {
 // @desc    Get All visits
 // @route   GET /api/visits
 // @access  Public
-// Convert buffer to base64
+
 
 
 export const getAllVisits = asyncHandler(async (req: Request, res: Response) => {

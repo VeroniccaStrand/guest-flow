@@ -196,7 +196,6 @@ exports.deleteVisit = (0, express_async_handler_1.default)((req, res) => __await
 // @desc    Get All visits
 // @route   GET /api/visits
 // @access  Public
-// Convert buffer to base64
 exports.getAllVisits = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('fetch backend');
     const visits = yield prisma.visit.findMany({

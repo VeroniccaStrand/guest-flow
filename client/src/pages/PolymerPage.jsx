@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import VisitContext from '../contexts/VisitContext';
 import nolato from '../assets/nolato-logo-redblack.png';
 
-const WelcomePage = () => {
+const PolymerPage = () => {
   const { visits, isLoading } = useContext(VisitContext);
   const [todaysVisits, setTodaysVisits] = useState([]);
   const today = new Date().toISOString().split('T')[0];
@@ -10,10 +10,12 @@ const WelcomePage = () => {
   useEffect(() => {
     const filteredVisits = visits.filter(visit => {
       const scheduledArrival = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
-      return scheduledArrival === today;
-     
+      return (
+        scheduledArrival === today &&
+        (visit.factoryTour === true || visit.hosting_company === 'Nolato Polymer AB')
+      );
     });
-    console.log('visits updated')
+    console.log('visits updated');
     setTodaysVisits(filteredVisits);
   }, [visits, today]);
 
@@ -21,67 +23,62 @@ const WelcomePage = () => {
     return <div className="flex justify-center items-center h-screen text-4xl">Loading visits...</div>;
   }
 
-  const getFontSize = (length) => {
-    if (length <= 1) return 'text-2xl';
-    if (length <= 2) return 'text-xl';
-    if (length <= 3) return 'text-lg';
-    return 'text-base';
-  };
+
 
   return (
-    <div className="grid grid-cols-[1.5fr_3.5fr] h-screen  bg-center bg-cover p-10">
-      <div className="flex items-start xl:p-10">
-        <img src={nolato} alt="Company Logo" className="h-24 sm:h-36" />
+    <div className="grid grid-cols-[1fr_1.1fr] h-screen bg-bg-image bg-center bg-cover  ">
+      <div className="flex items-start p-10">
+        <img src={nolato} alt="Company Logo" className="h-28" />
       </div>
-      <div className="flex flex-col  overflow-hidden">
-        <header className="mb-6 flex flex-col m-10 self-end ">
-          <h1 className="text-2xl   xl:text-4xl text-primary-text font-bold text-shadow-lg">
+      <div className="flex flex-col p-10 ">
+        <header className="mr-4 ">
+          <h1 className=" flex justify-end desktop:text-5xl tv:text-7xl text-primary-text font-bold text-shadow-lg  ">
             Welcome to Torekov
           </h1>
-          <div className="flex space-x-2 text-lg sm:text-xl items-center justify-end  text-nyans-text font-light mt-[-10px]">
+          <div className="flex space-x-2  laptop:text-lg desktop:text-3xl tv:text-4xl items-center justify-end  text-nyans-text font-light mt-[-10px]">
             <p>Nolato AB</p>
-            <div className="divider w-1 h-6 bg-neutral mx-2"></div>
+            <div className="divider w-[.5px] h-10 bg-neutral mx-2"></div>
             <p>Nolato MediTor AB</p>
-            <div className="divider w-1 h-6 bg-neutral mx-2"></div>
+            <div className="divider w-[.5px] h-10 bg-neutral mx-2"></div>
             <p>Nolato Polymer AB</p>
           </div>
         </header>
         <div className='container grid  h-full  items-center'>
 
-          <div className="grid grid-cols-auto-fill-sm 5xl:grid-cols-auto-fill-100 gap-6 min-h-[400px] mb-4  mr-10 ml-10 relative">
+          <div className="container  h-full flex flex-col desktop:p-5 tv:py-20  justify-center gap-6">
             {todaysVisits.length > 0 ? (
               todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
-                const fontSizeClass = getFontSize(visitorNames.length);
+
                 return (
 
-                  <div key={visit.id} className=' shadow-xl  rounded p-4 relative flex flex-col  bg-stone-100 bg-opacity-60 justify-between'>
-                    <div className='    rounded-lg '>
-                      <h2 className=' 2xl:text-1xl text-primary-text font-semibold '>{visit.company}</h2>
-                      <p className='text-nyans-text text-ms mt-[-5px] '>{visit.company_info}</p>
-                    </div>
-                    
+                  <div key={visit.id} className='flex flex-col shadow-md  rounded-xl laptop:p-4 desktop:p-6 tv: flex-grow max-h-[25rem] bg-gray-gradient   justify-between'>
+                    <h2 className=' laptop:text-2xl desktop:text-3xl tv:text-5xl rounded bg-opacity-25      text-[#444] '>{visit.company}</h2>
 
-                    <div className='text-nyans-text  font-bold mt-5 '>
-                      <div className='  gap-2'>
+                    <div className='text-nyans-text flex  font-medium justify-center  laptop:text-2xl desktop:text-3xl tv:text-4xl '>
+                      <div className='flex-col flex gap-2 text-center justify-center '>
                         {visitorNames.map((name, index) => (
 
-                          <p key={index} className={`text-shadow  ${fontSizeClass}`}>{name}</p>
+                          <p key={index} className={`text-shadow-md  font-bold  capitalize `}>{name}</p>
 
                         ))}
                       </div>
-
                     </div>
-                    
-                    <div >
-                    <p className='text-brand-red text-sm mb-10'>Your host today will be <span className='font-bold'>{visit.host}</span> </p>
-                      <p className=' absolute bottom-0 right-0 p-4 text-black  font-extrabold '>   {visit.visiting_departments}</p>
 
+                    <div className='flex justify-between items-end' >
+                      <p className='text-nyans-text desktop:text-xl tv:text-2xl  '>Your host today is <br /><span className='font-bold text-brand-red'>{visit.host}</span> </p>
+                      <p className='text-black  desktop:text-xl tv:text-2xl font-light '>   {visit.hosting_company}</p>
                     </div>
+
                   </div>
 
-
                 );
+
+
+
+
+
+
               })
             ) : (
               <div className="flex flex-col items-center justify-center text-center rounded-lg p-6 w-full bg-white bg-opacity-70">
@@ -99,4 +96,4 @@ const WelcomePage = () => {
   );
 };
 
-export default WelcomePage;
+export default PolymerPage;

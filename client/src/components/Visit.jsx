@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { formatDate } from '../utils/formatDate';
 
 const Visit = ({ visit }) => {
-  console.log(visit)
+  
   return (
     <tr className="hover:bg-gray-100">
       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary-text">
