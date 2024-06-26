@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import VisitContext from '../contexts/VisitContext';
 import nolato from '../assets/nolato-logo-redblack.png';
 
-const WelcomePage = () => {
+const PolymerPage = () => {
   const { visits, isLoading } = useContext(VisitContext);
   const [todaysVisits, setTodaysVisits] = useState([]);
   const today = new Date().toISOString().split('T')[0];
@@ -15,8 +15,9 @@ const WelcomePage = () => {
         (visit.factoryTour === true || visit.hosting_company === 'Nolato Polymer AB')
       );
     });
-    console.log('visits updated');
+    console.log(visits)
     setTodaysVisits(filteredVisits);
+    console.log(filteredVisits)
   }, [visits, today]);
 
   if (isLoading) {
@@ -45,7 +46,7 @@ const WelcomePage = () => {
         </header>
         <div className='container grid  h-full  items-center'>
 
-          <div className="container  h-full flex flex-col desktop:p-5 tv:py-20  justify-center gap-6">
+          <div className={`container ${todaysVisits.length > 3 ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : ' h-full flex flex-col desktop:p-5 tv:py-20  justify-center gap-6'} `}>
             {todaysVisits.length > 0 ? (
               todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
@@ -53,7 +54,7 @@ const WelcomePage = () => {
                 return (
 
                   <div key={visit.id} className='flex flex-col shadow-md  rounded-xl laptop:p-4 desktop:p-6 tv: flex-grow max-h-[25rem] bg-gray-gradient   justify-between'>
-                    <h2 className=' laptop:text-2xl desktop:text-3xl tv:text-5xl rounded bg-opacity-25      text-[#444] '>{visit.company}</h2>
+                    <h2 className=' laptop:text-2xl desktop:text-3xl tv:text-4xl rounded bg-opacity-25      text-[#444] '>{visit.company}</h2>
 
                     <div className='text-nyans-text flex  font-medium justify-center  laptop:text-2xl desktop:text-3xl tv:text-4xl '>
                       <div className='flex-col flex gap-2 text-center justify-center '>
@@ -81,19 +82,28 @@ const WelcomePage = () => {
 
               })
             ) : (
-              <div className="flex flex-col items-center justify-center text-center rounded-lg p-6 w-full bg-white bg-opacity-70">
-                <div className="text-xl sm:text-xl text-primary-text font-semibold mb-2">
-                  No visits today
+              !isLoading && (
+                <div className="flex flex-col  items-center justify-center text-center  p-10 w-3/4">
+                  <div className=" tracking-wide leading-10 text-2xl  font-medium   text-nyans-text">
+                    <p className='flex flex-col'> We are a Swedish, publicly listed group with a well-established global position on three continents:<br /> <span className='font-bold'>Europe, Asia, and North America. </span><br />We develop and manufacture products in polymer
+
+                      materials such as plastic, silicone and thermoplastic elastomers (TPE) for leading customers. Our offering spans the entire value chain - from solutions-oriented development focused on
+
+                      sustainability to product delivery</p>
+                  </div>
                 </div>
-              </div>
+              )
+
+
+
+
+
             )}
           </div>
-
         </div>
       </div>
     </div>
+  )
+}
 
-  );
-};
-
-export default WelcomePage;
+export default PolymerPage;

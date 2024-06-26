@@ -181,7 +181,7 @@ const AddVisitForm = () => {
           </label>
           <p className='text-sm text-brand-red'>
             All scheduled visits will be displayed at the entrance on the date
-            of the visit.
+            of the visit. <br /> And on the checked hosts monitor.
           </p>
           <div className='flex flex-wrap'>
             {['Nolato Polymer AB', 'Nolato MediTor AB', 'Nolato AB'].map(

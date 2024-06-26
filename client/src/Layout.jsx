@@ -7,10 +7,11 @@ import EditPage from './pages/EditPage';
 import WelcomePage from './pages/WelcomePage';
 import PolymerPage from './pages/PolymerPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import MeditorPage from './pages/MeditorPage';
 
 const Layout = () => {
   const location = useLocation();
-  const hideNavbarRoutes = ['/welcome', '/', '/polymer'];
+  const hideNavbarRoutes = ['/welcome', '/', '/polymer', '/meditor'];
 
   return (
     <>
@@ -23,6 +24,7 @@ const Layout = () => {
         </Route>
         <Route path="/welcome" element={<WelcomePage />} />
         <Route path="/polymer" element={<PolymerPage />} />
+        <Route path="/meditor" element={<MeditorPage />} />
       </Routes>
     </>
   );
