@@ -2,7 +2,7 @@ import { useContext, useState, useEffect } from 'react';
 import VisitContext from '../contexts/VisitContext';
 import nolato from '../assets/nolato-logo-redblack.png';
 
-const PolymerPage = () => {
+const MeditorPage = () => {
   const { visits, isLoading } = useContext(VisitContext);
   const [todaysVisits, setTodaysVisits] = useState([]);
   const today = new Date().toISOString().split('T')[0];
@@ -12,7 +12,7 @@ const PolymerPage = () => {
       const scheduledArrival = new Date(visit.scheduled_arrival).toISOString().split('T')[0];
       return (
         scheduledArrival === today &&
-        (visit.factoryTour === true || visit.hosting_company === 'Nolato Polymer AB')
+        (visit.factoryTour === true || visit.hosting_company === 'Nolato MediTor AB')
       );
     });
     console.log(visits)
@@ -46,8 +46,10 @@ const PolymerPage = () => {
         </header>
         <div className='container grid  h-full  items-center'>
 
+
           <div className={`container ${todaysVisits.length > 3 ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : ' h-full flex flex-col desktop:p-5 tv:py-20  justify-center gap-6'} `}>
             {todaysVisits.length > 0 ? (
+
               todaysVisits.map((visit) => {
                 const visitorNames = visit.visitors.map(visitor => visitor.name);
 
@@ -106,4 +108,4 @@ const PolymerPage = () => {
   )
 }
 
-export default PolymerPage;
+export default MeditorPage;
